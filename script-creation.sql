@@ -17,8 +17,8 @@ CREATE TABLE user_t
 ,first_name VARCHAR2(64)
 ,last_name VARCHAR2(64)
 ,avatar_path VARCHAR2(256)
-,phone_number CHAR(10) DEFAULT '0000000000' CHECK (regexp_like(phone_number, '[:digit:]{10}'))
-,email VARCHAR2(256) CHECK (regexp_like(email, '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$'))
+,phone_number CHAR(10)
+,email VARCHAR2(256)
 ,password VARCHAR(128)
 ,is_my_user INT DEFAULT 0 CHECK (is_my_user IN (0, 1))
 );
