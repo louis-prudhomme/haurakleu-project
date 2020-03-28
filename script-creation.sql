@@ -125,6 +125,6 @@ CREATE TABLE keyword
 CREATE TABLE has
 (id_report INT NOT NULL
 ,id_keyword INT NOT NULL
-,CONSTRAINT fk_has_report FOREIGN KEY (id_report) REFERENCES report (id)
+,CONSTRAINT fk_has_report FOREIGN KEY (id_report) REFERENCES report (id) ON DELETE CASCADE
 ,CONSTRAINT fk_has_keyword FOREIGN KEY (id_keyword) REFERENCES keyword (id)
 );
