@@ -1,85 +1,100 @@
-Table User as u {
-    id int [pk, increment]
-    firstname varchar
-    lastname varchar
+Table User {
+    id int [pk]
+    first_name varchar
+    last_name varchar
     avatar_path varchar
-    phone number //check form
-    email varchar //check form
-    password varchar //check form & hash ?
+    phone_number varchar 
+    email varchar
+    password varchar
    
-    is_my_user int // only 0 or 1
+    is_my_user boolean
 }
 
 Table Performs {
-    id_student int [pk, ref: < u.id]
-    id_instructions int [pk, ref: < i.id]
+    id_student int [pk, ref: < Student.id]
+    id_instructions int [pk, ref: < Instructions.id]
 }
 
-Table Instructions as i {
+Table Instructions {
     id int [pk]
+    guideline varchar
     deadline date
 }
 
-Table Student as s {
-    id int [pk, ref: - u.id]
-    promotion int //check if year
-
-    is_apprentice int // only 0 or 1
- 
-    id_major int [ref: < m.id]
-}
-
-Table Major as m {
-    id int [pk, increment]
-    label varchar
-    id_major_director int [ref: < t.id]
-}
-
-Table Company as cy {
-    id int [pk, increment]
+Table Company {
+    id int [pk]
     name varchar
 }
 
-Table Teacher as t {
-    id int [pk, increment]
+Table Conf_Level {
+    id int [pk]
+    label varchar
+}
+
+Table Teaching_field {
+    id int [pk]
+    label varchar
+}
+
+Table Study_Level {
+    id int [pk]
+    label varchar
+}
+
+Table Company_Tutor {
+    id int [pk, ref: - User.id]
+    job varchar
+}
+
+Table Teacher {
+    id int [pk, ref: - User.id]
     hired date
     teaching_field varchar
 }
 
 Table Teaches {
-    id_teacher int [pk, ref: < t.id]
-    id_field int [pk, ref: < f.id]
+    id_teacher int [pk, ref: < Teacher.id]
+    id_field int [pk, ref: < Teaching_field.id]
 }
 
-Table Fields as f {
-    id int [pk, increment]
+Table Major {
+    id int [pk]
     label varchar
+    id_major_director int [ref: < Teacher.id]
 }
 
-Table Company_Tutor as ct {
-    id int [pk, increment]
-    job varchar
+Table Student {
+    id int [pk, ref: - User.id]
+    promotion int
+
+    is_apprentice boolean
+ 
+    id_major int [ref: < Major.id]
+    id_study_level int [ref: < Study_Level.id]
 }
 
-Table Confidentiality as c {
-    id int [pk, increment]
-    label varchar
+Table Keyword {
+    id int [pk]
+    word varchar
 }
 
 Table Report {
-    id int [pk, increment]
+    id int [pk]
     title varchar
     submited date
-    confidentiality_level int [ref: < c.id]
 
-    is_pedag_vetted int // 0 or 1
-    is_company_vetted int // 0 or 1
-    is_final int // 0 or 1
+    is_pedag_vetted boolean
+    is_company_vetted boolean
 
-    id_student int [ref: < s.id]
-    id_pedag_tutor int [ref: < t.id]
-    id_company_tutor int [ref: < ct.id]
-    id_company int [ref: < cy.id]
-    id_instructions int [ref: < i.id]
+    id_student int [ref: < Student.id]
+    id_company int [ref: < Company.id]
+    id_pedag_tutor int [ref: < Teacher.id]
+    id_company_tutor int [ref: < Company_Tutor.id]
+    id_conf_level int [ref: < Conf_Level.id]
+    id_instructions int [ref: < Instructions.id]
 }
 
+Table Has {
+    id_report int [pk, ref: < Report.id]
+    id_keyword int [pk, ref: < Keyword.id]
+}
