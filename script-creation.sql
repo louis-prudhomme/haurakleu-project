@@ -23,6 +23,8 @@ CREATE TABLE user_t
 ,email VARCHAR2(256)
 ,password VARCHAR(128)
 ,is_my_user INT DEFAULT 0 CHECK (is_my_user IN (0, 1))
+,CONSTRAINT check_email CHECK (email LIKE '%@%.%' AND email NOT LIKE '@%' AND email NOT LIKE '%@%@%')
+,CONSTRAINT check_phone_number CHECK (REGEXP_LIKE(phone_number, '^((\+)33|0)[1-9](\d{2}){4}$'))
 );
 
 CREATE TABLE instructions
