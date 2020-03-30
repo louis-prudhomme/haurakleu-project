@@ -68,18 +68,18 @@ INSERT INTO study_level (label) VALUES ('M2');
 
 INSERT INTO user_t (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Slayer', 'Doom', '666:/chainsaw.jpg', '0666136660', 'doomslayer@rip.tear', 'zpdkqpkdzqpok', 0);
 INSERT INTO user_t (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('John', 'Carmack', '/home/carmack/pictures/armadillo.png', '0498684962', 'johnc@idsoftware.com', 'zpdkqpkdzqpok', 1);
-INSERT INTO user_t (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Christian', 'Nguyen', 'http://gil.cc/esazew', '0069178424', 'es@ze.sk', 'atiewus', 1);
+INSERT INTO user_t (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Christian', 'Nguyen', 'http://gil.cc/esazew', '0691784249', 'es@ze.sk', 'atiewus', 1);
 INSERT INTO user_t (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Earl', 'Webster', 'http://gi.dm/fucwuula', '0818702908', 'rugo@fotabe.tw', 'lonoduk', 0);
 INSERT INTO user_t (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Lydia', 'Park', 'http://duzin.gl/ho', '0486447349', 'izsafis@peopcoh.io', 'hoahonu', 0);
 INSERT INTO user_t (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Alma', 'Hunter', 'http://web.pe/gedub', '0547197958', 'ej@la.bw', 'rolotef', 0);
-INSERT INTO user_t (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Clara', 'Paul', 'http://ogodmu.mv/vegarol', '0089984108', 'ti@nuh.za', 'vawehne', 0);
+INSERT INTO user_t (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Clara', 'Paul', 'http://ogodmu.mv/vegarol', '0809984108', 'ti@nuh.za', 'vawehne', 0);
 INSERT INTO user_t (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Henrietta', 'Underwood', 'http://bewhuk.us/hede', '0767025947', 'aphom@tajhuczi.bm', 'aliijim', 0);
 INSERT INTO user_t (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Genevieve', 'Caldwell', 'http://zefokrad.us/era', '0554030398', 'lopro@devet.hn', 'tabejne', 1);
 INSERT INTO user_t (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Victoria', 'Fernandez', 'http://nuk.hr/jefwu', '0428439760', 'da@ode.ao', 'rohuhum', 1);
 INSERT INTO user_t (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Gerald', 'Holland', 'http://juwol.nu/dohujav', '0172835010', 'koligmev@tin.lc', 'aplukun', 0);
 INSERT INTO user_t (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Mike', 'Morgan', 'http://ototol.ph/fa', '0230902204', 'sum@mewkosot.ke', 'ejbopiv', 1);
 INSERT INTO user_t (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Anthony', 'Wells', 'http://gidahe.cm/cosvus', '0167152627', 'rifechu@ho.as', 'jaldigu', 0);
-INSERT INTO user_t (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Olivia', 'Douglas', 'http://kikuwzo.al/vi', '0097407100', 'fu@polosip.tr', 'voitirn', 0);
+INSERT INTO user_t (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Olivia', 'Douglas', 'http://kikuwzo.al/vi', '0974071000', 'fu@polosip.tr', 'voitirn', 0);
 INSERT INTO user_t (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Theresa', 'Tucker', 'http://petbe.ye/he', '0438562511', 'uloabi@ip.tn', 'idipisa', 0);
 INSERT INTO user_t (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Johanna', 'Rodriguez', 'http://burhu.fi/zad', '0562144554', 'umuuwic@mah.de', 'zasalaj', 1);
 INSERT INTO user_t (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Elmer', 'Taylor', 'http://cusgaje.lc/oljo', '0191617302', 'cevop@kohlegci.rs', 'ijuselu', 0);
@@ -93,7 +93,7 @@ INSERT INTO user_t (first_name, last_name, avatar_path, phone_number, email, pas
 INSERT INTO user_t (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Franklin', 'Fields', 'http://boti.pg/hakkago', '0265799381', 'lub@nek.ge', 'mofacok', 1);
 INSERT INTO user_t (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Willie', 'Stewart', 'http://bud.az/pebo', '0585979273', 'uswespic@piule.vc', 'liniasn', 1);
 INSERT INTO user_t (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Flora', 'Norris', 'http://savi.gb/poimo', '0824489470', 'kenevezi@jidcez.et', 'hedawre', 0);
-
+	
 INSERT INTO company_tutor (id, job) VALUES (1, 'Developer');
 INSERT INTO company_tutor (id, job) VALUES (2, 'Project manager');
 INSERT INTO company_tutor (id, job) VALUES (3, 'HR');
