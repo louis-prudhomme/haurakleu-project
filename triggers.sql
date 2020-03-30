@@ -1,5 +1,5 @@
 CREATE OR REPLACE TRIGGER report_validation
-AFTER update OR insert
+BEFORE update OR insert
 ON report
 FOR EACH ROW 
 WHEN (new.is_company_vetted = 1 AND new.is_pedag_vetted = 1)
