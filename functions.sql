@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION doc_print
+CREATE OR REPLACE FUNCTION is_allowed
 (p_id_user NUMBER, p_id_report NUMBER)
 RETURN NUMBER
 AS
@@ -38,13 +38,24 @@ BEGIN
 END;
 /
 
+CREATE OR REPLACE FUNCTION doc_print
+(p_id_user NUMBER, p_id_report NUMBER)
+RETURN NUMBER
+AS
+    result NUMBER;
+BEGIN
+    SELECT is_allowed(p_id_user, p_id_report) INTO result FROM DUAL;
+    RETURN result;
+END;
+/
+
 CREATE OR REPLACE FUNCTION doc_copy
 (p_id_user NUMBER, p_id_report NUMBER)
 RETURN NUMBER
 AS
     result NUMBER;
 BEGIN
-    SELECT doc_print(p_id_user, p_id_report) INTO result FROM DUAL;
+    SELECT is_allowed(p_id_user, p_id_report) INTO result FROM DUAL;
     RETURN result;
 END;
 /
@@ -55,7 +66,18 @@ RETURN NUMBER
 AS
     result NUMBER;
 BEGIN
-    SELECT doc_print(p_id_user, p_id_report) INTO result FROM DUAL;
+    SELECT is_allowed(p_id_user, p_id_report) INTO result FROM DUAL;
+    RETURN result;
+END;
+/
+
+CREATE OR REPLACE FUNCTION doc_consult
+(p_id_user NUMBER, p_id_report NUMBER)
+RETURN NUMBER
+AS
+    result NUMBER;
+BEGIN
+    SELECT is_allowed(p_id_user, p_id_report) INTO result FROM DUAL;
     RETURN result;
 END;
 /
