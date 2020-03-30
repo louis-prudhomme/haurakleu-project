@@ -36,3 +36,27 @@ BEGIN
         RETURN 0;
     END IF;
 END;
+/
+
+CREATE OR REPLACE FUNCTION doc_copy
+(p_id_user NUMBER, p_id_report NUMBER)
+RETURN NUMBER
+AS
+    result NUMBER;
+BEGIN
+    SELECT doc_print(p_id_user, p_id_report) INTO result FROM DUAL;
+    RETURN result;
+END;
+/
+
+CREATE OR REPLACE FUNCTION doc_download
+(p_id_user NUMBER, p_id_report NUMBER)
+RETURN NUMBER
+AS
+    result NUMBER;
+BEGIN
+    SELECT doc_print(p_id_user, p_id_report) INTO result FROM DUAL;
+    RETURN result;
+END;
+/
+
