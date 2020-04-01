@@ -81,7 +81,7 @@ Table Keyword {
 Table Report {
     id int [pk]
     title varchar
-    submited date
+    submitted date
 
     is_pedag_vetted boolean
     is_company_vetted boolean
@@ -97,4 +97,12 @@ Table Report {
 Table Has {
     id_report int [pk, ref: < Report.id]
     id_keyword int [pk, ref: < Keyword.id]
+}
+
+Table Report_Analysis {
+    id_report int [pk, ref: - Report.id]
+    consults int
+    copies int
+    downloads int
+    prints int
 }
