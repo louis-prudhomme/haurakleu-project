@@ -46,6 +46,6 @@ CREATE OR REPLACE TRIGGER insert_report_analysis
 AFTER INSERT ON REPORT
 FOR EACH ROW
 BEGIN
-    INSERT INTO report (id_report) VALUES (:new.id);
+    INSERT INTO report_analysis (id_report) VALUES (:new.id);
 END;
 /
