@@ -1,8 +1,8 @@
 ALTER SESSION SET NLS_DATE_FORMAT = 'DD-MM-YYYY';
 
-INSERT INTO instructions (guidelines, deadline) VALUES ('Write down a report of your internship', '26-03-2020');
-INSERT INTO instructions (guidelines, deadline) VALUES ('Write down a report of your apprenticeship', '02-12-2000');
-INSERT INTO instructions (guidelines, deadline) VALUES ('Write down a report of your internship ; it must be fourteen pages long', '26-01-2019');
+INSERT INTO instructions (guidelines, deadline) VALUES ('Write down a report of your internship', '26-03-2021');
+INSERT INTO instructions (guidelines, deadline) VALUES ('Write down a report of your apprenticeship', '02-12-2021');
+INSERT INTO instructions (guidelines, deadline) VALUES ('Write down a report of your internship ; it must be fourteen pages long', '26-01-2021');
 
 INSERT INTO company (name) VALUES ('MyCrauSauft');
 INSERT INTO company (name) VALUES ('Haurakleu');
