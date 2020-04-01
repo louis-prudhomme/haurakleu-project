@@ -1,10 +1,10 @@
 CREATE OR REPLACE TRIGGER report_validation
 BEFORE update OR insert
 ON report
-FOR EACH ROW 
+FOR EACH ROW
 WHEN (new.is_company_vetted = 1 AND new.is_pedag_vetted = 1)
 BEGIN
-    DELETE FROM report 
+    DELETE FROM report
         WHERE id <> :new.id
         AND submitted <= :new.submitted
         AND id_student = :new.id_student
@@ -39,5 +39,13 @@ BEGIN
     END IF;
     EXCEPTION
     WHEN DEADLINE_EXCEPTION THEN RAISE_APPLICATION_ERROR(-20002, 'THE REPORT IS LATE, THE DEADLINE IS OVER');
+END;
+/
+
+CREATE OR REPLACE TRIGGER insert_report_analysis
+AFTER INSERT ON REPORT
+FOR EACH ROW
+BEGIN
+    INSERT INTO report (id_report) VALUES (:new.id);
 END;
 /
