@@ -24,6 +24,11 @@ BEGIN
         INTO conf 
         FROM report
         WHERE id = p_id_report;
+
+    IF conf <> 1 THEN
+        RETURN -2;
+    END IF;
+
     SELECT is_my_user 
         INTO us_my 
         FROM user_t 
@@ -40,12 +45,10 @@ BEGIN
             OR id_pedag_tutor = p_id_user 
             OR id_company_tutor = p_id_user);
             
-    IF conf <> 1 THEN
-        RETURN -1;
-    ELSIF us_my = 0 AND is_part < 1 THEN
-        RETURN -2;
-    ELSIF state < 2 AND is_part < 1 THEN
+    IF us_my = 0 AND is_part < 1 THEN
         RETURN -3;
+    ELSIF state < 2 AND is_part < 1 THEN
+        RETURN -4;
     ELSE
         RETURN 0;
     END IF;
