@@ -9,6 +9,12 @@ CREATE TABLE user_t
 ,is_my_user INT DEFAULT 0 CHECK (is_my_user IN (0, 1))
 ,CONSTRAINT check_email CHECK (email LIKE '%@%.%' AND email NOT LIKE '@%' AND email NOT LIKE '%@%@%')
 ,CONSTRAINT check_phone_number CHECK (REGEXP_LIKE(phone_number, '^((\+)33|0)[1-9](\d{2}){4}$'))
+,CONSTRAINT check_password_strength CHECK(regexp_like(password,'^.*[A-Z].*$')
+and regexp_like(password,'^.*[0-9].*$')
+and regexp_like(password,'^.*[^A-Z,0-9].*$')
+and regexp_like(password,'^.*[!@#$%^&*(),.?":{}|<>].*$')
+and LENGTHB(password) >= 8)
+);
 );
 
 CREATE TABLE instructions
