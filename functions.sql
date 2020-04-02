@@ -1,5 +1,5 @@
 CREATE OR REPLACE FUNCTION is_allowed
-(p_id_user NUMBER, p_id_report NUMBER)
+(p_id_user NUMBER, p_id_report NUMBER, p_conf_level NUMBER)
 RETURN NUMBER
 AS
     return_val NUMBER;
@@ -33,7 +33,7 @@ BEGIN
             FROM report
             WHERE id = p_id_report;
 
-        IF conf <> 1 THEN
+        IF conf > p_conf_level THEN
             RAISE confidentiality_prohibits;
         END IF;
 
@@ -87,7 +87,7 @@ AS
     PRAGMA AUTONOMOUS_TRANSACTION;
     result NUMBER;
 BEGIN
-    result := is_allowed(p_id_user, p_id_report);
+    result := is_allowed(p_id_user, p_id_report, 1);
     IF result = 1 THEN
         UPDATE report_analysis SET prints = prints + 1 WHERE id_report = p_id_report;
         COMMIT;
@@ -103,7 +103,7 @@ AS
     PRAGMA AUTONOMOUS_TRANSACTION;
     result NUMBER;
 BEGIN
-    result := is_allowed(p_id_user, p_id_report);
+    result := is_allowed(p_id_user, p_id_report, 1);
     IF result = 1 THEN
         UPDATE report_analysis SET copies = copies + 1 WHERE id_report = p_id_report;
         COMMIT;
@@ -119,7 +119,7 @@ AS
     PRAGMA AUTONOMOUS_TRANSACTION;
     result NUMBER;
 BEGIN
-    result := is_allowed(p_id_user, p_id_report);
+    result := is_allowed(p_id_user, p_id_report, 1);
     IF result = 1 THEN
         UPDATE report_analysis SET downloads = downloads + 1 WHERE id_report = p_id_report;
         COMMIT;
@@ -135,7 +135,7 @@ AS
     PRAGMA AUTONOMOUS_TRANSACTION;
     result NUMBER;
 BEGIN
-    result := is_allowed(p_id_user, p_id_report);
+    result := is_allowed(p_id_user, p_id_report, 2);
     IF result = 1 THEN
         UPDATE report_analysis SET consults = consults + 1 WHERE id_report = p_id_report;
         COMMIT;
