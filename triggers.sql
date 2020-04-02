@@ -60,3 +60,4 @@ BEGIN
     INSERT INTO report_analysis (id_report) VALUES (:new.id);
 END;
 /
+
