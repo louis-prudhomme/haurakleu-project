@@ -118,3 +118,21 @@ BEGIN
     RETURN result;
 END;
 /
+
+CREATE OR REPLACE PROCEDURE delete_intermediary_reports
+(p_id_report NUMBER, p_submitted DATE, p_id_student NUMBER, p_id_instructions NUMBER)
+AS
+    PRAGMA AUTONOMOUS_TRANSACTION;
+    subm DATE;
+    stud NUMBER;
+    inst NUMBER;
+BEGIN
+    DELETE FROM report
+        WHERE id <> p_id_report
+        AND submitted <= p_submitted
+        AND id_student = p_id_student
+        AND id_instructions = p_id_instructions;
+        
+    COMMIT;
+END;
+/
