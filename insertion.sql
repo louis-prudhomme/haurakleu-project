@@ -18,7 +18,7 @@ INSERT INTO company (name) VALUES ('BPN Marseillebas');
 INSERT INTO company (name) VALUES ('Bleu Telecom');
 INSERT INTO company (name) VALUES ('Vivendive');
 INSERT INTO company (name) VALUES ('Societe globale');
-INSERT INTO company (name) VALUES ('Mcheline');
+INSERT INTO company (name) VALUES ('Micheline');
 INSERT INTO company (name) VALUES ('Pythagore');
 INSERT INTO company (name) VALUES ('Curcumain');
 INSERT INTO company (name) VALUES ('Credit naval');
