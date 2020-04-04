@@ -26,4 +26,5 @@ DROP TABLE conf_level;
 DROP TABLE company;
 DROP TABLE instructions;
 DROP TABLE user_t;
+DROP TABLE AUDIT_KEYWORD;
 
