@@ -81,7 +81,7 @@ END is_allowed;
 /
 
 CREATE OR REPLACE FUNCTION get_report_by_keyword
-(keyword_to_search VARCHAR2)
+(p_keyword VARCHAR2)
 RETURN SYS_REFCURSOR
 AS
     PRAGMA AUTONOMOUS_TRANSACTION;
@@ -92,7 +92,7 @@ BEGIN
     SELECT id 
         INTO id_word 
         FROM keyword 
-        WHERE word = keyword_to_search;
+        WHERE word = p_keyword;
 
     OPEN report_keyword FOR 
         SELECT r.id AS id, r.title AS title 
@@ -115,18 +115,18 @@ END get_report_by_keyword;
 /
 
 CREATE OR REPLACE FUNCTION get_most_wanted_reports
-(top NUMBER)
+(p_top NUMBER)
 RETURN SYS_REFCURSOR
 AS
-  most_wanted_keyword SYS_REFCURSOR;
+    most_wanted_keyword SYS_REFCURSOR;
 BEGIN
-    OPEN most_wanted_keyword 
+    OPEN most_wanted_keyword
         FOR SELECT * FROM (
                 SELECT k.id AS id, k.word AS title, a.nb_research 
                     FROM keyword k, audit_keyword a 
                     WHERE k.id = a.id_keyword 
                     ORDER BY a.nb_research DESC)
-            WHERE ROWNUM <= top;     
+            WHERE ROWNUM <= p_top;     
     RETURN most_wanted_keyword;
 END get_most_wanted_reports;
 /

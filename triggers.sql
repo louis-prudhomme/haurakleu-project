@@ -18,7 +18,7 @@ EXCEPTION
 END;
 /
 
-CREATE OR REPLACE TRIGGER CHECK_HIRED_DATE
+CREATE OR REPLACE TRIGGER check_hired_date
 BEFORE INSERT OR UPDATE ON TEACHER
 FOR EACH ROW
 DECLARE
@@ -53,11 +53,11 @@ EXCEPTION
 END;
 /
 
-CREATE OR REPLACE TRIGGER insert_report_analysis
+CREATE OR REPLACE TRIGGER insert_audit_report
 AFTER INSERT ON report
 FOR EACH ROW
 BEGIN
-    INSERT INTO report_analysis (id_report) 
+    INSERT INTO audit_report (id_report) 
         VALUES (:new.id);
 END;
 /

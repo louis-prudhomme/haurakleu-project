@@ -1,5 +1,3 @@
-
-
 CREATE OR REPLACE PROCEDURE doc_print
 (p_id_user NUMBER, p_id_report NUMBER)
 AS
@@ -8,7 +6,9 @@ AS
 BEGIN
     result := is_allowed(p_id_user, p_id_report, 1);
     IF result = 1 THEN
-        UPDATE report_analysis SET prints = prints + 1 WHERE id_report = p_id_report;
+        UPDATE audit_report
+            SET prints = prints + 1 
+            WHERE id_report = p_id_report;
         COMMIT;
     END IF;
 END;
@@ -22,7 +22,9 @@ AS
 BEGIN
     result := is_allowed(p_id_user, p_id_report, 1);
     IF result = 1 THEN
-        UPDATE report_analysis SET copies = copies + 1 WHERE id_report = p_id_report;
+        UPDATE audit_report
+            SET copies = copies + 1 
+            WHERE id_report = p_id_report;
         COMMIT;
     END IF;
 END;
@@ -36,7 +38,9 @@ AS
 BEGIN
     result := is_allowed(p_id_user, p_id_report, 1);
     IF result = 1 THEN
-        UPDATE report_analysis SET downloads = downloads + 1 WHERE id_report = p_id_report;
+        UPDATE audit_report 
+            SET downloads = downloads + 1 
+            WHERE id_report = p_id_report;
         COMMIT;
     END IF;
 END;
@@ -50,7 +54,9 @@ AS
 BEGIN
     result := is_allowed(p_id_user, p_id_report, 2);
     IF result = 1 THEN
-        UPDATE report_analysis SET consults = consults + 1 WHERE id_report = p_id_report;
+        UPDATE audit_report 
+            SET consults = consults + 1 
+            WHERE id_report = p_id_report;
         COMMIT;
     END IF;
 END;
@@ -69,7 +75,6 @@ BEGIN
         AND submitted <= p_submitted
         AND id_student = p_id_student
         AND id_instructions = p_id_instructions;
-        
     COMMIT;
 END;
 /

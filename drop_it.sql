@@ -15,7 +15,7 @@ DROP FUNCTION get_report_by_keyword;
 DROP FUNCTION get_most_wanted_reports;
 
 DROP TABLE audit_keyword;
-DROP TABLE report_analysis;
+DROP TABLE audit_report;
 DROP TABLE has;
 DROP TABLE keyword;
 DROP TABLE report;
