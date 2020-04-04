@@ -133,7 +133,7 @@ CREATE TABLE report_analysis
 
 CREATE TABLE audit_keyword
 (id_keyword INT NOT NULL
-,nb_research NUMBER DEFAULT 0
+,nb_research INT DEFAULT 0
 ,CONSTRAINT fk_audit_keyword FOREIGN KEY (id_keyword) REFERENCES keyword (id) ON DELETE CASCADE
 ,CONSTRAINT pk_audit_keyword PRIMARY KEY (id_keyword)
 );
