@@ -34,8 +34,8 @@ EXCEPTION
 END;
 /
 
-CREATE OR REPLACE TRIGGER DEADLINE_VALIDATION
-BEFORE INSERT OR UPDATE OF SUBMITTED ON REPORT
+CREATE OR REPLACE TRIGGER deadline_validation
+BEFORE INSERT OR UPDATE OF submitted ON report
 FOR EACH ROW
 DECLARE 
     DEADLINE_EXCEPTION EXCEPTION;
@@ -54,10 +54,20 @@ END;
 /
 
 CREATE OR REPLACE TRIGGER insert_report_analysis
-AFTER INSERT ON REPORT
+AFTER INSERT ON report
 FOR EACH ROW
 BEGIN
-    INSERT INTO report_analysis (id_report) VALUES (:new.id);
+    INSERT INTO report_analysis (id_report) 
+        VALUES (:new.id);
+END;
+/
+
+CREATE OR REPLACE TRIGGER insert_audit_keyword
+AFTER INSERT ON keyword
+FOR EACH ROW
+BEGIN
+    INSERT INTO audit_keyword (id_keyword) 
+        VALUES (:new.id);
 END;
 /
 

@@ -62,17 +62,17 @@ BEGIN
         END IF;
     EXCEPTION
         WHEN no_record_found THEN
-            DBMS_OUTPUT.PUT_LINE('No matching records were found for either the provided report id or student id, or both.');
-            return_val := 0;
+            RAISE_APPLICATION_ERROR(-20010, 'No matching records were found for either the provided report id or student id, or both.');
+            RETURN -1;
         WHEN confidentiality_prohibits THEN
-            DBMS_OUTPUT.PUT_LINE('Confidentiality settings disable this action.');
-            return_val := 0;
+            RAISE_APPLICATION_ERROR(-20011, 'Confidentiality settings disable this action.');
+            RETURN -1;
         WHEN report_not_validated THEN
-            DBMS_OUTPUT.PUT_LINE('The report has not been validated, action aborted.');
-            return_val := 0;
+            RAISE_APPLICATION_ERROR(-20012, 'The report has not been validated, action aborted.');
+            RETURN -1;
         WHEN not_my_user THEN
-            DBMS_OUTPUT.PUT_LINE('User must be a user of My Efrei.');
-            return_val := 0;
+            RAISE_APPLICATION_ERROR(-20013, 'User must be a user of My Efrei.');
+            RETURN -1;
     END;
 
 RETURN return_val;
@@ -80,120 +80,54 @@ RETURN return_val;
 END is_allowed;
 /
 
-CREATE OR REPLACE FUNCTION doc_print
-(p_id_user NUMBER, p_id_report NUMBER)
-RETURN NUMBER
+CREATE OR REPLACE FUNCTION get_report_by_keyword
+(keyword_to_search VARCHAR2)
+RETURN SYS_REFCURSOR
 AS
     PRAGMA AUTONOMOUS_TRANSACTION;
-    result NUMBER;
+    report_keyword SYS_REFCURSOR;
+    id_word INT;
+    nb_audit INT;
 BEGIN
-    result := is_allowed(p_id_user, p_id_report, 1);
-    IF result = 1 THEN
-        UPDATE report_analysis SET prints = prints + 1 WHERE id_report = p_id_report;
-        COMMIT;
-    END IF;
-    RETURN result;
-END;
-/
+    SELECT id 
+        INTO id_word 
+        FROM keyword 
+        WHERE word = keyword_to_search;
 
-CREATE OR REPLACE FUNCTION doc_copy
-(p_id_user NUMBER, p_id_report NUMBER)
-RETURN NUMBER
-AS
-    PRAGMA AUTONOMOUS_TRANSACTION;
-    result NUMBER;
-BEGIN
-    result := is_allowed(p_id_user, p_id_report, 1);
-    IF result = 1 THEN
-        UPDATE report_analysis SET copies = copies + 1 WHERE id_report = p_id_report;
-        COMMIT;
-    END IF;
-    RETURN result;
-END;
-/
+    OPEN report_keyword FOR 
+        SELECT r.id AS id, r.title AS title 
+            FROM has h, report r 
+            WHERE h.id_keyword = id_word 
+            AND h.id_report = r.id 
+            ORDER BY r.title;
 
-CREATE OR REPLACE FUNCTION doc_download
-(p_id_user NUMBER, p_id_report NUMBER)
-RETURN NUMBER
-AS
-    PRAGMA AUTONOMOUS_TRANSACTION;
-    result NUMBER;
-BEGIN
-    result := is_allowed(p_id_user, p_id_report, 1);
-    IF result = 1 THEN
-        UPDATE report_analysis SET downloads = downloads + 1 WHERE id_report = p_id_report;
-        COMMIT;
-    END IF;
-    RETURN result;
-END;
-/
-
-CREATE OR REPLACE FUNCTION doc_consult
-(p_id_user NUMBER, p_id_report NUMBER)
-RETURN NUMBER
-AS
-    PRAGMA AUTONOMOUS_TRANSACTION;
-    result NUMBER;
-BEGIN
-    result := is_allowed(p_id_user, p_id_report, 2);
-    IF result = 1 THEN
-        UPDATE report_analysis SET consults = consults + 1 WHERE id_report = p_id_report;
-        COMMIT;
-    END IF;
-    RETURN result;
-END;
-/
-
-CREATE OR REPLACE PROCEDURE delete_intermediary_reports
-(p_id_report NUMBER, p_submitted DATE, p_id_student NUMBER, p_id_instructions NUMBER)
-AS
-    PRAGMA AUTONOMOUS_TRANSACTION;
-    subm DATE;
-    stud NUMBER;
-    inst NUMBER;
-BEGIN
-    DELETE FROM report
-        WHERE id <> p_id_report
-        AND submitted <= p_submitted
-        AND id_student = p_id_student
-        AND id_instructions = p_id_instructions;
-        
+    UPDATE audit_keyword 
+        SET nb_research = nb_research + 1 
+        WHERE id_keyword = id_word;
     COMMIT;
-END;
-/
-
-CREATE OR REPLACE FUNCTION GET_REPORT_BY_KEYWORD(KEYWORD_TO_SEARCH IN VARCHAR2)
-  RETURN SYS_REFCURSOR
-AS
-  REPORT_KEYWORD SYS_REFCURSOR;
-    ID_WORD INT;
-    NB_AUDIT INT;
-BEGIN
-    SELECT ID INTO ID_WORD FROM KEYWORD WHERE WORD = KEYWORD_TO_SEARCH;
-    OPEN REPORT_KEYWORD FOR SELECT r.id as id, r.title as title FROM HAS h, REPORT r WHERE h.ID_KEYWORD = ID_WORD and h.id_report = r.id order by r.title;
-  
-    SELECT COUNT(*) INTO NB_AUDIT FROM AUDIT_KEYWORD WHERE ID_KEYWORD = ID_WORD;
-    IF NB_AUDIT <> 0 THEN
-        UPDATE AUDIT_KEYWORD SET NB_RESEARCH = NB_RESEARCH + 1 WHERE ID_KEYWORD = ID_WORD;
-    ELSE
-        INSERT INTO AUDIT_KEYWORD (ID_KEYWORD, NB_RESEARCH) VALUES (ID_WORD, 1);
-    END IF;
-    RETURN REPORT_KEYWORD;
+    RETURN report_keyword;
 
     EXCEPTION
-        WHEN NO_DATA_FOUND THEN RAISE_APPLICATION_ERROR(-20004, 'KEYWORD NOT FOUND');
-        RETURN NULL;  
-END GET_REPORT_BY_KEYWORD;
+        WHEN NO_DATA_FOUND THEN 
+            RAISE_APPLICATION_ERROR(-20004, 'Keyword not found');
+            RETURN NULL;  
+END get_report_by_keyword;
 /
 
-CREATE OR REPLACE FUNCTION GET_MOST_WANTED_REPORTS(TOP IN NUMBER)
-  RETURN SYS_REFCURSOR
+CREATE OR REPLACE FUNCTION get_most_wanted_reports
+(top NUMBER)
+RETURN SYS_REFCURSOR
 AS
-  MOST_WANTED_KEYWORD SYS_REFCURSOR;
+  most_wanted_keyword SYS_REFCURSOR;
 BEGIN
-  OPEN MOST_WANTED_KEYWORD FOR select * from (SELECT k.id as id, k.word as title , a.nb_research FROM keyword k, AUDIT_KEYWORD a WHERE k.id = a.id_keyword order by a.nb_research desc)
-  where ROWNUM <= TOP;     
-  RETURN MOST_WANTED_KEYWORD;
-END GET_MOST_WANTED_REPORTS;
+    OPEN most_wanted_keyword 
+        FOR SELECT * FROM (
+                SELECT k.id AS id, k.word AS title, a.nb_research 
+                    FROM keyword k, audit_keyword a 
+                    WHERE k.id = a.id_keyword 
+                    ORDER BY a.nb_research DESC)
+            WHERE ROWNUM <= top;     
+    RETURN most_wanted_keyword;
+END get_most_wanted_reports;
 /
 
