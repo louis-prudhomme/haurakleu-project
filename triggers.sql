@@ -14,7 +14,7 @@ BEGIN
     delete_intermediary_reports(:new.id, :new.submitted, :new.id_student, :new.id_instructions);
 EXCEPTION
     WHEN not_enough_keywords THEN
-        RAISE_APPLICATION_ERROR(-20010, 'Expected at least one keyword for this report.');
+        RAISE_APPLICATION_ERROR(-20005, 'Expected at least one keyword for this report.');
 END;
 /
 
@@ -30,7 +30,7 @@ BEGIN
    
 EXCEPTION
     WHEN HIRED_DATE_EXCEPTION THEN 
-        RAISE_APPLICATION_ERROR(-20002, 'THE HIRED DATE CANT BE IN THE FUTURE');
+        RAISE_APPLICATION_ERROR(-20003, 'The hired date can not be in the future.');
 END;
 /
 
@@ -49,7 +49,7 @@ BEGIN
 
 EXCEPTION
     WHEN DEADLINE_EXCEPTION THEN 
-        RAISE_APPLICATION_ERROR(-20002, 'THE REPORT IS LATE, THE DEADLINE IS OVER');
+        RAISE_APPLICATION_ERROR(-20002, 'The report is late, the deadline is over.');
 END;
 /
 
