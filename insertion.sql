@@ -140,7 +140,7 @@ INSERT INTO major (label, id_major_director) VALUES ('Solar panels', 7);
 INSERT INTO major (label, id_major_director) VALUES ('Drones', 12);
 INSERT INTO major (label, id_major_director) VALUES ('Droids', 12);
 INSERT INTO major (label, id_major_director) VALUES ('Robots', 12);
-INSERT INTO major (label, id_major_director) VALUES ('Databases', 10 );
+INSERT INTO major (label, id_major_director) VALUES ('Databases', 10);
 INSERT INTO major (label, id_major_director) VALUES ('Artificial Intelligence', 8);
 INSERT INTO major (label, id_major_director) VALUES ('Bioengineering', 9);
 INSERT INTO major (label, id_major_director) VALUES ('New energies', 12);

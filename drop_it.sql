@@ -1,4 +1,4 @@
-DROP TRIGGER insert_report_analysis;
+DROP TRIGGER insert_audit_report;
 DROP TRIGGER insert_audit_keyword;
 DROP TRIGGER deadline_validation;
 DROP TRIGGER report_validation;
