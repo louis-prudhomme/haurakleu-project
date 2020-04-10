@@ -144,7 +144,7 @@ CREATE TABLE rel_has
 ,CONSTRAINT pk_has PRIMARY KEY (id_report, id_keyword)
 );
 
-CREATE TABLE adt_report
+CREATE TABLE audit_report
 (id_report INT NOT NULL
 ,consults INT DEFAULT 0
 ,copies INT DEFAULT 0

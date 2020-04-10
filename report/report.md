@@ -13,7 +13,17 @@
   - [Error Management](#error-management)
 - [E/R diagram](#er-diagram)
 - [Implementation of important issues](#implementation-of-important-issues)
+  - [Trigger TRG_STUDENT_PROMOTION](#trigger-trgstudentpromotion)
+  - [Function FUN_IS_ALLOWED](#function-funisallowed)
+  - [Procedures PRC_REPORT_*](#procedures-prcreport)
+  - [Function FUN_MOST_WANTED_REPORTS (ne garder que celle-ci ou FUN_REPORTS_BY_KEYWORD ?)](#function-funmostwantedreports-ne-garder-que-celle-ci-ou-funreportsbykeyword)
+  - [Function FUN_REPORTS_BY_KEYWORD (ne garder que celle-ci ou FUN_MOST_WANTED_REPORTS ?)](#function-funreportsbykeyword-ne-garder-que-celle-ci-ou-funmostwantedreports)
+  - [Trigger TRG_REPORT_VALIDATION](#trigger-trgreportvalidation)
 - [Problems encountered](#problems-encountered)
+  - [Fucking Oracle](#fucking-oracle)
+  - [Oracle = Cancer](#oracle--cancer)
+  - [Ton sujet pue la merde](#ton-sujet-pue-la-merde)
+  - [Need to commit](#need-to-commit)
 - [Conclusion](#conclusion)
 
 <div style="page-break-after: always;"/>
@@ -84,6 +94,26 @@
 
 # Implementation of important issues
 
+## Trigger TRG_STUDENT_PROMOTION
+
+## Function FUN_IS_ALLOWED
+
+## Procedures PRC_REPORT_*
+
+## Function FUN_MOST_WANTED_REPORTS (ne garder que celle-ci ou FUN_REPORTS_BY_KEYWORD ?)
+
+## Function FUN_REPORTS_BY_KEYWORD (ne garder que celle-ci ou FUN_MOST_WANTED_REPORTS ?)
+
+## Trigger TRG_REPORT_VALIDATION
+
 # Problems encountered
+
+## Fucking Oracle
+
+## Oracle = Cancer
+
+## Ton sujet pue la merde
+
+## Need to commit
 
 # Conclusion
