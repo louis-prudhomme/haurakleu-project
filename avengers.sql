@@ -562,9 +562,9 @@ INSERT INTO tab_company (name) VALUES ('Credit naval');
 INSERT INTO tab_company (name) VALUES ('Lepetit');
 INSERT INTO tab_company (name) VALUES ('Ricard');
 
-INSERT INTO tab_confidentiality_level (label) VALUES ('Normal');
-INSERT INTO tab_confidentiality_level (label) VALUES ('Low level');
-INSERT INTO tab_confidentiality_level (label) VALUES ('High level');
+INSERT INTO tab_confidentiality_level (id, label) VALUES (1, 'Normal');
+INSERT INTO tab_confidentiality_level (id, label) VALUES (2, 'Low level');
+INSERT INTO tab_confidentiality_level (id, label) VALUES (3, 'High level');
 
 INSERT INTO tab_teaching_field (label) VALUES ('Object-Oriented Programming');
 INSERT INTO tab_teaching_field (label) VALUES ('Database Administration');
@@ -597,12 +597,12 @@ INSERT INTO tab_teaching_field (label) VALUES ('Advanced .NET Core');
 INSERT INTO tab_teaching_field (label) VALUES ('Advanced DevOps');
 INSERT INTO tab_teaching_field (label) VALUES ('Advanced Reali-time systems');
 
-INSERT INTO tab_study_level (label) VALUES ('L1');
-INSERT INTO tab_study_level (label) VALUES ('L2');
-INSERT INTO tab_study_level (label) VALUES ('L3');
-INSERT INTO tab_study_level (label) VALUES ('M1');
-INSERT INTO tab_study_level (label) VALUES ('M2');
-INSERT INTO tab_study_level (label) VALUES ('OUT');
+INSERT INTO tab_study_level (id, label) VALUES (1, 'L1');
+INSERT INTO tab_study_level (id, label) VALUES (2, 'L2');
+INSERT INTO tab_study_level (id, label) VALUES (3, 'L3');
+INSERT INTO tab_study_level (id, label) VALUES (4, 'M1');
+INSERT INTO tab_study_level (id, label) VALUES (5, 'M2');
+INSERT INTO tab_study_level (id, label) VALUES (6,'OUT');
 
 INSERT INTO tab_user (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Slayer', 'Doom', '666:/chainsaw.jpg', '0666136660', 'doomslayer@rip.tear', 'AA!45aaass', 0);
 INSERT INTO tab_user (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('John', 'Carmack', '/home/carmack/pictures/armadillo.png', '0498684962', 'johnc@idsoftware.com', 'f1aA6aa@', 1);
@@ -682,7 +682,7 @@ INSERT INTO tab_major (label, id_major_director) VALUES ('Databases', 10);
 INSERT INTO tab_major (label, id_major_director) VALUES ('Artificial Intelligence', 8);
 INSERT INTO tab_major (label, id_major_director) VALUES ('Bioengineering', 9);
 INSERT INTO tab_major (label, id_major_director) VALUES ('New energies', 12);
-INSERT INTO tab_major (label, id_major_director) VALUES ('Finger', 11);
+INSERT INTO tab_major (label, id_major_director) VALUES ('Avionics and Space', 11);
 
 INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (14, 2021, 0, 3, 4);
 INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (15, 2023, 0, 8, 2);

@@ -1,9 +1,13 @@
+-- this procedure simulates the printing of a report
 CREATE OR REPLACE PROCEDURE prc_report_print
 (pn_id_user INT, pn_id_report INT)
 AS
-    PRAGMA AUTONOMOUS_TRANSACTION;
+    -- allows this procedure to be autonomous which allows us to test it in a select
+	PRAGMA AUTONOMOUS_TRANSACTION;
     ln_result INT;
 BEGIN
+    -- we ask this function to know if the given user has permission on this report
+    -- the 1 represents the maximum level of confidentiality for this operation
     ln_result := fun_is_allowed(pn_id_user, pn_id_report, 1);
     IF ln_result = 1 THEN
         UPDATE adt_report
@@ -14,12 +18,16 @@ BEGIN
 END;
 /
 
-CREATE OR REPLACE PROCEDURE prc_report_copy
+-- this procedure simulates the copying of a report
+CREATE OR REPLACE PROCEDURE prc_report_print
 (pn_id_user INT, pn_id_report INT)
 AS
-    PRAGMA AUTONOMOUS_TRANSACTION;
+    -- allows this procedure to be autonomous which allows us to test it in a select
+	PRAGMA AUTONOMOUS_TRANSACTION;
     ln_result INT;
 BEGIN
+    -- we ask this function to know if the given user has permission on this report
+    -- the 1 represents the maximum level of confidentiality for this operation
     ln_result := fun_is_allowed(pn_id_user, pn_id_report, 1);
     IF ln_result = 1 THEN
         UPDATE adt_report
@@ -30,12 +38,16 @@ BEGIN
 END;
 /
 
-CREATE OR REPLACE PROCEDURE prc_report_download
+-- this procedure simulates the downloading of a report
+CREATE OR REPLACE PROCEDURE prc_report_print
 (pn_id_user INT, pn_id_report INT)
 AS
-    PRAGMA AUTONOMOUS_TRANSACTION;
+    -- allows this procedure to be autonomous which allows us to test it in a select
+	PRAGMA AUTONOMOUS_TRANSACTION;
     ln_result INT;
 BEGIN
+    -- we ask this function to know if the given user has permission on this report
+    -- the 1 represents the maximum level of confidentiality for this operation
     ln_result := fun_is_allowed(pn_id_user, pn_id_report, 1);
     IF ln_result = 1 THEN
         UPDATE adt_report
@@ -46,12 +58,16 @@ BEGIN
 END;
 /
 
-CREATE OR REPLACE PROCEDURE prc_report_consult
+-- this procedure simulates the consulting of a report
+CREATE OR REPLACE PROCEDURE prc_report_print
 (pn_id_user INT, pn_id_report INT)
 AS
-    PRAGMA AUTONOMOUS_TRANSACTION;
+    -- this allows this procedure to be autonomous which allows us to test it in a select
+	PRAGMA AUTONOMOUS_TRANSACTION;
     ln_result INT;
 BEGIN
+    -- we ask this function to know if the given user has permission on this report
+    -- the 1 represents the maximum level of confidentiality for this operation
     ln_result := fun_is_allowed(pn_id_user, pn_id_report, 2);
     IF ln_result = 1 THEN
         UPDATE adt_report
@@ -62,10 +78,12 @@ BEGIN
 END;
 /
 
+-- this procedure deletes intermediary reports when tutors validate what becomes the final report.
 CREATE OR REPLACE PROCEDURE prc_delete_intermediary_reports
 (pn_id_report INT, pd_submitted DATE, pn_id_student INT, pn_id_instructions INT)
 AS
-    PRAGMA AUTONOMOUS_TRANSACTION;
+    -- this allows this procedure to be autonomous which allows us to test it in a select
+	PRAGMA AUTONOMOUS_TRANSACTION;
 BEGIN
     DELETE FROM tab_report
         WHERE id <> pn_id_report
