@@ -10,11 +10,6 @@ Table User {
     is_my_user boolean
 }
 
-Table Performs {
-    id_student int [pk, ref: < Student.id]
-    id_instructions int [pk, ref: < Instructions.id]
-}
-
 Table Instructions {
     id int [pk]
     guideline varchar
@@ -26,12 +21,12 @@ Table Company {
     name varchar
 }
 
-Table Conf_Level {
+Table Confidentiality_Level {
     id int [pk]
     label varchar
 }
 
-Table Teaching_field {
+Table Teaching_Field {
     id int [pk]
     label varchar
 }
@@ -49,12 +44,11 @@ Table Company_Tutor {
 Table Teacher {
     id int [pk, ref: - User.id]
     hired date
-    teaching_field varchar
 }
 
 Table Teaches {
     id_teacher int [pk, ref: < Teacher.id]
-    id_field int [pk, ref: < Teaching_field.id]
+    id_field int [pk, ref: < Teaching_Field.id]
 }
 
 Table Major {
@@ -73,9 +67,9 @@ Table Student {
     id_study_level int [ref: < Study_Level.id]
 }
 
-Table Keyword {
-    id int [pk]
-    word varchar
+Table Performs {
+    id_student int [pk, ref: < Student.id]
+    id_instructions int [pk, ref: < Instructions.id]
 }
 
 Table Report {
@@ -90,8 +84,13 @@ Table Report {
     id_company int [ref: < Company.id]
     id_pedag_tutor int [ref: < Teacher.id]
     id_company_tutor int [ref: < Company_Tutor.id]
-    id_conf_level int [ref: < Conf_Level.id]
+    id_conf_level int [ref: < Confidentiality_Level.id]
     id_instructions int [ref: < Instructions.id]
+}
+
+Table Keyword {
+    id int [pk]
+    word varchar
 }
 
 Table Has {
@@ -99,10 +98,15 @@ Table Has {
     id_keyword int [pk, ref: < Keyword.id]
 }
 
-Table Report_Analysis {
+Table Audit_Report {
     id_report int [pk, ref: - Report.id]
-    consults int
-    copies int
-    downloads int
-    prints int
+    consults int 
+    copies int 
+    prints int 
+    downloads int 
+}
+
+Table Audit_Keyword {
+    id_keyword int [pk, ref: - Keyword.id]
+    searches int
 }

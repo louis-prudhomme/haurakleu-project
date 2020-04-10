@@ -1,72 +1,81 @@
-CREATE OR REPLACE TRIGGER report_validation
+CREATE OR REPLACE TRIGGER trg_report_validation
 AFTER update OR insert
-ON report
+ON tab_report
 FOR EACH ROW
 WHEN (new.is_company_vetted = 1 AND new.is_pedag_vetted = 1)
 DECLARE
-    keyword_count NUMBER;
-    not_enough_keywords EXCEPTION;
+    ln_keyword_count INT;
+    le_not_enough_keywords EXCEPTION;
 BEGIN
-    SELECT count(id_keyword) INTO keyword_count FROM has WHERE id_report = :NEW.id;
-    IF keyword_count < 1 THEN
-        RAISE not_enough_keywords;
+    SELECT count(id_keyword)
+        INTO ln_keyword_count
+        FROM rel_has
+        WHERE id_report = :new.id;
+
+    IF ln_keyword_count < 1 THEN
+        RAISE le_not_enough_keywords;
     END IF;
-    delete_intermediary_reports(:new.id, :new.submitted, :new.id_student, :new.id_instructions);
+
+    prc_delete_intermediary_reports(:new.id, :new.submitted, :new.id_student, :new.id_instructions);
+
 EXCEPTION
-    WHEN not_enough_keywords THEN
-        RAISE_APPLICATION_ERROR(-20005, 'Expected at least one keyword for this report.');
+    WHEN le_not_enough_keywords THEN
+        RAISE_APPLICATION_ERROR(-20005, 'Expected at least one tab_keyword for this report.');
 END;
 /
 
-CREATE OR REPLACE TRIGGER check_hired_date
-BEFORE INSERT OR UPDATE ON TEACHER
+CREATE OR REPLACE TRIGGER trg_teacher_hired_date
+BEFORE INSERT OR UPDATE ON tab_teacher
 FOR EACH ROW
 DECLARE
-    HIRED_DATE_EXCEPTION EXCEPTION;
+    le_hired_date_exception EXCEPTION;
 BEGIN
-    IF :NEW.HIRED > SYSDATE THEN 
-        RAISE HIRED_DATE_EXCEPTION;
+    IF :new.hired > SYSDATE THEN
+        RAISE le_hired_date_exception;
     END IF;
-   
+
 EXCEPTION
-    WHEN HIRED_DATE_EXCEPTION THEN 
+    WHEN le_hired_date_exception THEN
         RAISE_APPLICATION_ERROR(-20003, 'The hired date can not be in the future.');
 END;
 /
 
-CREATE OR REPLACE TRIGGER deadline_validation
-BEFORE INSERT OR UPDATE OF submitted ON report
+CREATE OR REPLACE TRIGGER trg_report_deadline
+BEFORE INSERT OR UPDATE OF submitted ON tab_report
 FOR EACH ROW
-DECLARE 
-    DEADLINE_EXCEPTION EXCEPTION;
-    DEADLINE_REPORT DATE;
+DECLARE
+    le_deadline_overdue EXCEPTION;
+    ld_deadline_report DATE;
 BEGIN
-    SELECT DEADLINE INTO DEADLINE_REPORT FROM INSTRUCTIONS WHERE INSTRUCTIONS.ID = :NEW.ID_INSTRUCTIONS;
-    
-    IF :NEW.SUBMITTED > DEADLINE_REPORT THEN 
-        RAISE DEADLINE_EXCEPTION;
+    SELECT DEADLINE
+        INTO ld_deadline_report
+        FROM tab_instructions
+        WHERE tab_instructions.id = :new.id_instructions;
+
+    IF :new.submitted > ld_deadline_report THEN
+        RAISE le_deadline_overdue;
     END IF;
 
 EXCEPTION
-    WHEN DEADLINE_EXCEPTION THEN 
-        RAISE_APPLICATION_ERROR(-20002, 'The report is late, the deadline is over.');
+    WHEN le_deadline_overdue THEN
+        RAISE_APPLICATION_ERROR(-20002, 'The tab_report is late, the deadline is over.');
 END;
 /
 
-CREATE OR REPLACE TRIGGER insert_audit_report
-AFTER INSERT ON report
+CREATE OR REPLACE TRIGGER trg_adt_report
+AFTER INSERT ON tab_report
 FOR EACH ROW
 BEGIN
-    INSERT INTO audit_report (id_report) 
+    INSERT INTO adt_report (id_report)
         VALUES (:new.id);
 END;
 /
 
-CREATE OR REPLACE TRIGGER insert_audit_keyword
-AFTER INSERT ON keyword
+CREATE OR REPLACE TRIGGER trg_adt_keyword
+AFTER INSERT ON tab_keyword
 FOR EACH ROW
 BEGIN
-    INSERT INTO audit_keyword (id_keyword) 
+    INSERT INTO adt_keyword (id_keyword)
         VALUES (:new.id);
 END;
 /

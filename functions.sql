@@ -1,133 +1,141 @@
-CREATE OR REPLACE FUNCTION is_allowed
-(p_id_user NUMBER, p_id_report NUMBER, p_conf_level NUMBER)
+CREATE OR REPLACE FUNCTION fun_is_allowed
+(pn_id_user NUMBER, pn_id_report NUMBER, pn_conf_level NUMBER)
 RETURN NUMBER
 AS
-    return_val NUMBER;
+    ln_return NUMBER;
 BEGIN
     DECLARE
-        chk_prms NUMBER;
-        conf NUMBER;
-        us_my NUMBER;
-        state NUMBER;
-        is_part NUMBER;
+        ln_chk_prms NUMBER;
+        ln_chk_conf NUMBER;
+        ln_chk_myus NUMBER;
+        ln_chk_state NUMBER;
+        ln_chk_partof NUMBER;
 
-        no_record_found EXCEPTION;
-        confidentiality_prohibits EXCEPTION;
-        report_not_validated EXCEPTION;
-        not_my_user EXCEPTION;
+        le_no_record_found EXCEPTION;
+        le_confidentiality_prohibits EXCEPTION;
+        le_report_not_validated EXCEPTION;
+        le_not_my_user EXCEPTION;
     BEGIN
         SELECT count(id)
-            INTO chk_prms 
-            FROM report
-            WHERE id = p_id_report;
-        SELECT count(id) + chk_prms
-            INTO chk_prms 
-            FROM user_t
-            WHERE id = p_id_user;
-        IF chk_prms <> 2 THEN
-            RAISE no_record_found;
+            INTO ln_chk_prms
+            FROM tab_report
+            WHERE id = pn_id_report;
+
+        SELECT count(id) + ln_chk_prms
+            INTO ln_chk_prms
+            FROM tab_user
+            WHERE id = pn_id_user;
+
+        IF ln_chk_prms <> 2 THEN
+            RAISE le_no_record_found;
         END IF;
 
         SELECT id_conf_level
-            INTO conf 
-            FROM report
-            WHERE id = p_id_report;
+            INTO ln_chk_conf
+            FROM tab_report
+            WHERE id = pn_id_report;
 
-        IF conf > p_conf_level THEN
-            RAISE confidentiality_prohibits;
+        IF ln_chk_conf > pn_conf_level THEN
+            RAISE le_confidentiality_prohibits;
         END IF;
 
-        SELECT is_my_user 
-            INTO us_my 
-            FROM user_t 
-            WHERE id = p_id_user;
+        SELECT is_my_user
+            INTO ln_chk_myus
+            FROM tab_user
+            WHERE id = pn_id_user;
+
         SELECT is_company_vetted + is_pedag_vetted
-            INTO state
-            FROM report 
-            WHERE id = p_id_report;
-        SELECT count(id) 
-            INTO is_part 
-            FROM report 
-            WHERE id = p_id_report
-                AND (id_student = p_id_user 
-                OR id_pedag_tutor = p_id_user 
-                OR id_company_tutor = p_id_user);
-                
-        IF state < 2 AND is_part < 1 THEN
-            RAISE report_not_validated;
-        ELSIF us_my = 0 AND is_part < 1 THEN
-            RAISE not_my_user;
+            INTO ln_chk_state
+            FROM tab_report
+            WHERE id = pn_id_report;
+
+        SELECT count(id)
+            INTO ln_chk_partof
+            FROM tab_report
+            WHERE id = pn_id_report
+                AND (id_student = pn_id_user
+                OR id_pedag_tutor = pn_id_user
+                OR id_company_tutor = pn_id_user);
+
+        IF ln_chk_state < 2 AND ln_chk_partof < 1 THEN
+            RAISE le_report_not_validated;
+        ELSIF ln_chk_myus = 0 AND ln_chk_partof < 1 THEN
+            RAISE le_not_my_user;
         ELSE
-            return_val := 1;
+            ln_return := 1;
         END IF;
+
     EXCEPTION
-        WHEN no_record_found THEN
+        WHEN le_no_record_found THEN
             RAISE_APPLICATION_ERROR(-20010, 'No matching records were found for either the provided report id or student id, or both.');
-            RETURN -1;
-        WHEN confidentiality_prohibits THEN
+            ln_return := -1;
+        WHEN le_confidentiality_prohibits THEN
             RAISE_APPLICATION_ERROR(-20011, 'Confidentiality settings disable this action.');
-            RETURN -1;
-        WHEN report_not_validated THEN
+            ln_return := -1;
+        WHEN le_report_not_validated THEN
             RAISE_APPLICATION_ERROR(-20012, 'The report has not been validated, action aborted.');
-            RETURN -1;
-        WHEN not_my_user THEN
+            ln_return := -1;
+        WHEN le_not_my_user THEN
             RAISE_APPLICATION_ERROR(-20013, 'User must be a user of My Efrei.');
-            RETURN -1;
+            ln_return := -1;
     END;
 
-RETURN return_val;
-
-END is_allowed;
+RETURN ln_return;
+END fun_is_allowed;
 /
 
-CREATE OR REPLACE FUNCTION get_report_by_keyword
-(p_keyword VARCHAR2)
+CREATE OR REPLACE FUNCTION fun_reports_by_keyword
+(pv_keyword VARCHAR2)
 RETURN SYS_REFCURSOR
 AS
     PRAGMA AUTONOMOUS_TRANSACTION;
-    report_keyword SYS_REFCURSOR;
-    id_word INT;
-    nb_audit INT;
-BEGIN
-    SELECT id 
-        INTO id_word 
-        FROM keyword 
-        WHERE word = p_keyword;
 
-    OPEN report_keyword FOR 
-        SELECT r.id AS id, r.title AS title 
-            FROM has h, report r 
-            WHERE h.id_keyword = id_word 
-            AND h.id_report = r.id 
+    lc_reports SYS_REFCURSOR;
+    ln_id_word INT;
+BEGIN
+    SELECT id
+        INTO ln_id_word
+        FROM tab_keyword
+        WHERE word = pv_keyword;
+
+    OPEN lc_reports FOR
+        SELECT r.id AS id, r.title AS title
+            FROM rel_has h 
+            LEFT JOIN tab_report r
+                ON h.id_report = r.id
+            WHERE h.id_keyword = ln_id_word
             ORDER BY r.title;
 
-    UPDATE audit_keyword 
-        SET nb_research = nb_research + 1 
-        WHERE id_keyword = id_word;
+    UPDATE adt_keyword
+        SET searches = searches + 1
+        WHERE id_keyword = ln_id_word;
     COMMIT;
-    RETURN report_keyword;
+
+    RETURN lc_reports;
 
     EXCEPTION
-        WHEN NO_DATA_FOUND THEN 
-            RAISE_APPLICATION_ERROR(-20004, 'Keyword not found');
-            RETURN NULL;  
-END get_report_by_keyword;
+        WHEN NO_DATA_FOUND THEN
+            RAISE_APPLICATION_ERROR(-20004, 'Keyword not found.');
+            RETURN NULL;
+END fun_reports_by_keyword;
 /
 
-CREATE OR REPLACE FUNCTION get_most_wanted_reports
-(p_top NUMBER)
+CREATE OR REPLACE FUNCTION fun_most_wanted_reports
+(pn_take_first NUMBER)
 RETURN SYS_REFCURSOR
 AS
-    most_wanted_keyword SYS_REFCURSOR;
+    lc_most_wanted_keywords SYS_REFCURSOR;
 BEGIN
-    OPEN most_wanted_keyword
+    OPEN lc_most_wanted_keywords
         FOR SELECT * FROM (
-                SELECT k.id AS id, k.word AS title, a.nb_research 
-                    FROM keyword k, audit_keyword a 
-                    WHERE k.id = a.id_keyword 
-                    ORDER BY a.nb_research DESC)
-            WHERE ROWNUM <= p_top;     
-    RETURN most_wanted_keyword;
-END get_most_wanted_reports;
+                SELECT k.id AS id, k.word AS title, a.searches
+                    FROM tab_keyword k
+                    LEFT JOIN adt_keyword a 
+                        ON k.id = a.id_keyword
+                    ORDER BY a.searches DESC)
+            WHERE ROWNUM <= pn_take_first;
+
+    RETURN lc_most_wanted_keywords;
+END fun_most_wanted_reports;
 /
 
