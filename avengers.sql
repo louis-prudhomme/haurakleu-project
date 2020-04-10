@@ -3,6 +3,7 @@ DROP TRIGGER trg_adt_keyword;
 DROP TRIGGER trg_report_deadline;
 DROP TRIGGER trg_report_validation;
 DROP TRIGGER trg_teacher_hired_date;
+DROP TRIGGER trg_student_promotion;
 
 DROP PROCEDURE prc_delete_intermediary_reports;
 DROP PROCEDURE prc_report_download;
@@ -498,6 +499,42 @@ BEGIN
 END;
 /
 
+CREATE OR REPLACE TRIGGER trg_student_promotion
+AFTER UPDATE OR INSERT
+ON tab_student
+FOR EACH ROW
+DECLARE
+    ln_current_prom VARCHAR2(64);
+    ln_current_year INT;
+    ln_current_month INT;
+
+    ln_chk_promotion INT;
+    le_wrong_promotion EXCEPTION;
+BEGIN
+    SELECT EXTRACT(YEAR FROM SYSDATE) 
+        INTO ln_current_year 
+        FROM DUAL;
+
+    SELECT EXTRACT(MONTH FROM SYSDATE) 
+        INTO ln_current_month 
+        FROM DUAL;
+
+    IF (:new.promotion > 0 AND ln_current_month < 13) THEN
+        ln_current_year := ln_current_year - 1;
+    END IF;
+    
+    ln_chk_promotion := ln_current_year + (6 - :new.id_study_level) - :new.promotion;
+    
+    IF ln_chk_promotion <> 0 and :new.id_study_level <> 6 THEN
+        RAISE le_wrong_promotion;
+    END IF;
+
+    EXCEPTION
+        WHEN le_wrong_promotion THEN
+            RAISE_APPLICATION_ERROR(-20006, 'Inconsistency between the promotion of the student and his group');
+END;
+/
+
 ALTER SESSION SET NLS_DATE_FORMAT = 'DD-MM-YYYY';
 
 INSERT INTO tab_instructions (guidelines, deadline) VALUES ('Write down a tab_report of your internship', '26-03-2021');
@@ -565,6 +602,7 @@ INSERT INTO tab_study_level (label) VALUES ('L2');
 INSERT INTO tab_study_level (label) VALUES ('L3');
 INSERT INTO tab_study_level (label) VALUES ('M1');
 INSERT INTO tab_study_level (label) VALUES ('M2');
+INSERT INTO tab_study_level (label) VALUES ('OUT');
 
 INSERT INTO tab_user (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Slayer', 'Doom', '666:/chainsaw.jpg', '0666136660', 'doomslayer@rip.tear', 'AA!45aaass', 0);
 INSERT INTO tab_user (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('John', 'Carmack', '/home/carmack/pictures/armadillo.png', '0498684962', 'johnc@idsoftware.com', 'f1aA6aa@', 1);
@@ -646,20 +684,20 @@ INSERT INTO tab_major (label, id_major_director) VALUES ('Bioengineering', 9);
 INSERT INTO tab_major (label, id_major_director) VALUES ('New energies', 12);
 INSERT INTO tab_major (label, id_major_director) VALUES ('Finger', 11);
 
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (14, 2001, 0, 3, 4);
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (15, 2015, 0, 8, 2);
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (16, 1997, 1, 7, 2);
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (17, 2013, 0, 7, 1);
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (18, 2013, 1, 2, 2);
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (19, 1986, 1, 3, 2);
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (20, 1980, 0, 8, 2);
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (21, 2015, 1, 6, 1);
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (22, 1988, 1, 6, 4);
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (23, 1981, 1, 8, 3);
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (24, 1983, 0, 7, 2);
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (25, 1974, 1, 8, 3);
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (26, 1987, 1, 5, 1);
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (27, 1986, 1, 4, 1);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (14, 2021, 0, 3, 4);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (15, 2023, 0, 8, 2);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (16, 2023, 1, 7, 2);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (17, 2024, 0, 7, 1);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (18, 2023, 1, 2, 2);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (19, 2023, 1, 3, 2);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (20, 2023, 0, 8, 2);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (21, 2024, 1, 6, 1);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (22, 2021, 1, 6, 4);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (23, 2022, 1, 8, 3);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (24, 2023, 0, 7, 2);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (25, 2022, 1, 8, 3);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (26, 2024, 1, 5, 1);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (27, 2024, 1, 4, 1);
 
 INSERT INTO rel_performs (id_student, id_instructions) VALUES (22, 3);
 INSERT INTO rel_performs (id_student, id_instructions) VALUES (24, 3);
