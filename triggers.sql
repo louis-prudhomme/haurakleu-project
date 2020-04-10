@@ -1,7 +1,9 @@
+-- this trigger checks that every final report has at least one keyword
 CREATE OR REPLACE TRIGGER trg_report_validation
 AFTER update OR insert
 ON tab_report
 FOR EACH ROW
+-- fires only when the report becomes final
 WHEN (new.is_company_vetted = 1 AND new.is_pedag_vetted = 1)
 DECLARE
     ln_keyword_count INT;
@@ -16,14 +18,15 @@ BEGIN
         RAISE le_not_enough_keywords;
     END IF;
 
+    -- if it has at least one keyword, we also delete intermediary reports
     prc_delete_intermediary_reports(:new.id, :new.submitted, :new.id_student, :new.id_instructions);
-
 EXCEPTION
     WHEN le_not_enough_keywords THEN
         RAISE_APPLICATION_ERROR(-20005, 'Expected at least one tab_keyword for this report.');
 END;
 /
 
+-- checks if no teacher hire date is in the future
 CREATE OR REPLACE TRIGGER trg_teacher_hired_date
 BEFORE INSERT OR UPDATE ON tab_teacher
 FOR EACH ROW
@@ -40,6 +43,7 @@ EXCEPTION
 END;
 /
 
+-- checks if the report is submitted before its deadline
 CREATE OR REPLACE TRIGGER trg_report_deadline
 BEFORE INSERT OR UPDATE OF submitted ON tab_report
 FOR EACH ROW
@@ -62,6 +66,7 @@ EXCEPTION
 END;
 /
 
+-- creates a matching audit record for each report
 CREATE OR REPLACE TRIGGER trg_adt_report
 AFTER INSERT ON tab_report
 FOR EACH ROW
@@ -71,6 +76,7 @@ BEGIN
 END;
 /
 
+-- creates a matching audit record for each keyword
 CREATE OR REPLACE TRIGGER trg_adt_keyword
 AFTER INSERT ON tab_keyword
 FOR EACH ROW
