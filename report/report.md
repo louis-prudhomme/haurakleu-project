@@ -5,12 +5,35 @@
 
 # Table of contents
 - [Table of contents](#table-of-contents)
+- [Report description](#report-description)
+- [Introduction (short description of project subject ?)](#introduction-short-description-of-project-subject)
 - [Naming conventions](#naming-conventions)
   - [Variables](#variables)
   - [Objects](#objects)
 - [E/R diagram](#er-diagram)
+- [Implementation of important issues](#implementation-of-important-issues)
+- [Problems encountered](#problems-encountered)
+- [Conclusion](#conclusion)
 
 <div style="page-break-after: always;"/>
+
+# Report description 
+
+> The deliverable consists of separate files; you can add at most three files on Moodle:
+> - the report : named name1_name2.pdf
+> - the script for populating the database + the script containing the different functions/queries.
+> The report must have between 5 and 10 pages. It includes an introduction, a short description of the project subject, some functions/queries for the most important issues of the project, a discussion of the encountered problems/difficulties, and a conclusion. 
+> The report should not explain your code in details, let alone include portions of your code: good code should be well self-commented. The code must be properly indented and commented. 
+> It must comply with the standard naming rules for variables and functions. 
+
+* [ ] The report must have between 5 and 10 pages.
+* [ ] It includes an introduction
+* [ ] short description of the project subject
+* [ ] some functions/queries for the most important issues of the project
+* [ ] a discussion of the encountered problems/difficulties
+* [ ] conclusion
+
+# Introduction (short description of project subject ?)
 
 # Naming conventions
 
@@ -44,3 +67,9 @@
 ![E/R diagram](./../model/harakleu-model.png)
 
 <div style="page-break-after: always;"/>
+
+# Implementation of important issues
+
+# Problems encountered
+
+# Conclusion
