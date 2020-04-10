@@ -18,8 +18,8 @@ BEGIN
 
     LOOP
         FETCH lc_results
-        INTO ln_id_keyword, lv_title_keyword;
-        EXIT WHEN lc_results%NOTFOUND;
+            INTO ln_id_keyword, lv_title_keyword;
+            EXIT WHEN lc_results%NOTFOUND;
         DBMS_OUTPUT.PUT_LINE(ln_id_keyword || ' | ' || lv_title_keyword);
     END LOOP;
     CLOSE lc_results;
@@ -52,8 +52,8 @@ BEGIN
 
     LOOP
         FETCH lc_results
-        INTO ln_id_keyword, lv_title_keyword;
-        EXIT WHEN lc_results%NOTFOUND;
+            INTO ln_id_keyword, lv_title_keyword;
+            EXIT WHEN lc_results%NOTFOUND;
         DBMS_OUTPUT.PUT_LINE(ln_id_keyword || ' | ' || lv_title_keyword);
     END LOOP;
     CLOSE lc_results;
@@ -72,8 +72,8 @@ BEGIN
 
     LOOP
         FETCH lc_results
-        INTO ln_id_keyword, lv_title_keyword, ln_researches_keyword;
-        EXIT WHEN lc_results%NOTFOUND;
+            INTO ln_id_keyword, lv_title_keyword, ln_researches_keyword;
+            EXIT WHEN lc_results%NOTFOUND;
         DBMS_OUTPUT.PUT_LINE('id tab_keyword : '|| ln_id_keyword || ' | ' || 'word : ' || lv_title_keyword || ' | ' || 'nb search : '|| ln_researches_keyword);
     END LOOP;
     CLOSE lc_results;
