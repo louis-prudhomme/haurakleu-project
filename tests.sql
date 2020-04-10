@@ -90,7 +90,7 @@ SELECT tab_report.id, tab_report.title, adt_report.consults
 
 -- consulting a tab_report
 BEGIN
-        prc_report_consult(20, 1);
+    prc_report_consult(20, 1);
 END;
 /
 

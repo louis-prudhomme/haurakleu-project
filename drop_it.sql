@@ -5,6 +5,7 @@ DROP TRIGGER trg_adt_keyword;
 DROP TRIGGER trg_report_deadline;
 DROP TRIGGER trg_report_validation;
 DROP TRIGGER trg_teacher_hired_date;
+DROP TRIGGER trg_student_promotion;
 
 -- procedures
 DROP PROCEDURE prc_delete_intermediary_reports;

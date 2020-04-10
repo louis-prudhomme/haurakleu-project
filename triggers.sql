@@ -86,3 +86,38 @@ BEGIN
 END;
 /
 
+CREATE OR REPLACE TRIGGER trg_student_promotion
+AFTER UPDATE OR INSERT
+ON tab_student
+FOR EACH ROW
+DECLARE
+    ln_current_prom VARCHAR2(64);
+    ln_current_year INT;
+    ln_current_month INT;
+
+    ln_chk_promotion INT;
+    le_wrong_promotion EXCEPTION;
+BEGIN
+    SELECT EXTRACT(YEAR FROM SYSDATE) 
+        INTO ln_current_year 
+        FROM DUAL;
+
+    SELECT EXTRACT(MONTH FROM SYSDATE) 
+        INTO ln_current_month 
+        FROM DUAL;
+
+    IF (:new.promotion > 0 AND ln_current_month < 13) THEN
+        ln_current_year := ln_current_year - 1;
+    END IF;
+    
+    ln_chk_promotion := ln_current_year + (6 - :new.id_study_level) - :new.promotion;
+    
+    IF ln_chk_promotion <> 0 and :new.id_study_level <> 6 THEN
+        RAISE le_wrong_promotion;
+    END IF;
+
+    EXCEPTION
+        WHEN le_wrong_promotion THEN
+            RAISE_APPLICATION_ERROR(-20006, 'Inconsistency between the promotion of the student and his group');
+END;
+/

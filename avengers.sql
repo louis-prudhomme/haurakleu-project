@@ -1,19 +1,25 @@
+-- drops everything in the database
+-- triggers
 DROP TRIGGER trg_adt_report;
 DROP TRIGGER trg_adt_keyword;
 DROP TRIGGER trg_report_deadline;
 DROP TRIGGER trg_report_validation;
 DROP TRIGGER trg_teacher_hired_date;
+DROP TRIGGER trg_student_promotion;
 
+-- procedures
 DROP PROCEDURE prc_delete_intermediary_reports;
 DROP PROCEDURE prc_report_download;
 DROP PROCEDURE prc_report_consult;
 DROP PROCEDURE prc_report_copy;
 DROP PROCEDURE prc_report_print;
 
+-- functions
 DROP FUNCTION fun_is_allowed;
 DROP FUNCTION fun_reports_by_keyword;
 DROP FUNCTION fun_most_wanted_reports;
 
+-- data tables, relations tables and audit tables
 DROP TABLE adt_keyword;
 DROP TABLE adt_report;
 DROP TABLE rel_has;
@@ -197,6 +203,9 @@ CREATE TABLE adt_keyword
 ,CONSTRAINT pk_audit_keyword PRIMARY KEY (id_keyword)
 );
 
+-- this function plays a centrail role in the user's interaction with reports
+-- it checks for a user, a report and an operation confidentiality level if the operation is allowed
+-- it returns one or crashes
 CREATE OR REPLACE FUNCTION fun_is_allowed
 (pn_id_user NUMBER, pn_id_report NUMBER, pn_conf_level NUMBER)
 RETURN NUMBER
@@ -215,39 +224,49 @@ BEGIN
         le_report_not_validated EXCEPTION;
         le_not_my_user EXCEPTION;
     BEGIN
+        -- we count how many reports matches the provided id
+        -- should be one 
         SELECT count(id)
             INTO ln_chk_prms
             FROM tab_report
             WHERE id = pn_id_report;
 
+        -- we count how many users matches the provided id
+        -- should be one
         SELECT count(id) + ln_chk_prms
             INTO ln_chk_prms
             FROM tab_user
             WHERE id = pn_id_user;
-
+    
+        -- if the number is different, there is at least one record (user or report) that hasn't been found
         IF ln_chk_prms <> 2 THEN
             RAISE le_no_record_found;
         END IF;
 
+        -- getting the report's confidentiality level
         SELECT id_conf_level
             INTO ln_chk_conf
             FROM tab_report
             WHERE id = pn_id_report;
 
+        -- checking report's confidentiality level against operation's
         IF ln_chk_conf > pn_conf_level THEN
             RAISE le_confidentiality_prohibits;
         END IF;
 
+        -- whether the user is a my efrei user
         SELECT is_my_user
             INTO ln_chk_myus
             FROM tab_user
             WHERE id = pn_id_user;
 
+        -- whether the report is validated
         SELECT is_company_vetted + is_pedag_vetted
             INTO ln_chk_state
             FROM tab_report
             WHERE id = pn_id_report;
 
+        -- returns 1 if the user is a tutor or the student of the report
         SELECT count(id)
             INTO ln_chk_partof
             FROM tab_report
@@ -257,8 +276,10 @@ BEGIN
                 OR id_company_tutor = pn_id_user);
 
         IF ln_chk_state < 2 AND ln_chk_partof < 1 THEN
+            -- if the report hasn't been validated and the user hasn't participated to it
             RAISE le_report_not_validated;
         ELSIF ln_chk_myus = 0 AND ln_chk_partof < 1 THEN
+            -- if the user neither is a my efrei user nor has particpated to the report
             RAISE le_not_my_user;
         ELSE
             ln_return := 1;
@@ -279,24 +300,28 @@ BEGIN
             ln_return := -1;
     END;
 
-RETURN ln_return;
+    RETURN ln_return;
 END fun_is_allowed;
 /
 
+-- obtains all the reports tagged with the provided keyword
 CREATE OR REPLACE FUNCTION fun_reports_by_keyword
 (pv_keyword VARCHAR2)
 RETURN SYS_REFCURSOR
 AS
+    -- this allows this procedure to be autonomous which allows us to test it in a select
     PRAGMA AUTONOMOUS_TRANSACTION;
 
     lc_reports SYS_REFCURSOR;
     ln_id_word INT;
 BEGIN
+    -- getting the id the provided keyword
     SELECT id
         INTO ln_id_word
         FROM tab_keyword
         WHERE word = pv_keyword;
 
+    -- getting the reports
     OPEN lc_reports FOR
         SELECT r.id AS id, r.title AS title
             FROM rel_has h 
@@ -305,6 +330,7 @@ BEGIN
             WHERE h.id_keyword = ln_id_word
             ORDER BY r.title;
 
+    -- if reports where found, update the audit table
     UPDATE adt_keyword
         SET searches = searches + 1
         WHERE id_keyword = ln_id_word;
@@ -319,6 +345,7 @@ BEGIN
 END fun_reports_by_keyword;
 /
 
+-- returns the first n most wanted reports, n being the parameter given to the function
 CREATE OR REPLACE FUNCTION fun_most_wanted_reports
 (pn_take_first NUMBER)
 RETURN SYS_REFCURSOR
@@ -338,13 +365,19 @@ BEGIN
 END fun_most_wanted_reports;
 /
 
+-- this procedure simulates the printing of a report
 CREATE OR REPLACE PROCEDURE prc_report_print
 (pn_id_user INT, pn_id_report INT)
 AS
-    PRAGMA AUTONOMOUS_TRANSACTION;
+    -- allows this procedure to be autonomous which allows us to test it in a select
+	PRAGMA AUTONOMOUS_TRANSACTION;
     ln_result INT;
 BEGIN
+    -- we ask this function to know if the given user has permission on this report
+    -- the 1 represents the maximum level of confidentiality for this operation
     ln_result := fun_is_allowed(pn_id_user, pn_id_report, 1);
+
+    -- if the operation is allowed, we increase the corresponding field in the audit table
     IF ln_result = 1 THEN
         UPDATE adt_report
             SET prints = prints + 1
@@ -354,13 +387,19 @@ BEGIN
 END;
 /
 
-CREATE OR REPLACE PROCEDURE prc_report_copy
+-- this procedure simulates the copying of a report
+CREATE OR REPLACE PROCEDURE prc_report_print
 (pn_id_user INT, pn_id_report INT)
 AS
-    PRAGMA AUTONOMOUS_TRANSACTION;
+    -- allows this procedure to be autonomous which allows us to test it in a select
+	PRAGMA AUTONOMOUS_TRANSACTION;
     ln_result INT;
 BEGIN
+    -- we ask this function to know if the given user has permission on this report
+    -- the 1 represents the maximum level of confidentiality for this operation
     ln_result := fun_is_allowed(pn_id_user, pn_id_report, 1);
+
+    -- if the operation is allowed, we increase the corresponding field in the audit table
     IF ln_result = 1 THEN
         UPDATE adt_report
             SET copies = copies + 1
@@ -370,13 +409,19 @@ BEGIN
 END;
 /
 
-CREATE OR REPLACE PROCEDURE prc_report_download
+-- this procedure simulates the downloading of a report
+CREATE OR REPLACE PROCEDURE prc_report_print
 (pn_id_user INT, pn_id_report INT)
 AS
-    PRAGMA AUTONOMOUS_TRANSACTION;
+    -- allows this procedure to be autonomous which allows us to test it in a select
+	PRAGMA AUTONOMOUS_TRANSACTION;
     ln_result INT;
 BEGIN
+    -- we ask this function to know if the given user has permission on this report
+    -- the 1 represents the maximum level of confidentiality for this operation
     ln_result := fun_is_allowed(pn_id_user, pn_id_report, 1);
+
+    -- if the operation is allowed, we increase the corresponding field in the audit table
     IF ln_result = 1 THEN
         UPDATE adt_report
             SET downloads = downloads + 1
@@ -386,13 +431,19 @@ BEGIN
 END;
 /
 
-CREATE OR REPLACE PROCEDURE prc_report_consult
+-- this procedure simulates the consulting of a report
+CREATE OR REPLACE PROCEDURE prc_report_print
 (pn_id_user INT, pn_id_report INT)
 AS
-    PRAGMA AUTONOMOUS_TRANSACTION;
+    -- this allows this procedure to be autonomous which allows us to test it in a select
+	PRAGMA AUTONOMOUS_TRANSACTION;
     ln_result INT;
 BEGIN
+    -- we ask this function to know if the given user has permission on this report
+    -- the 2 represents the maximum level of confidentiality for this operation
     ln_result := fun_is_allowed(pn_id_user, pn_id_report, 2);
+
+    -- if the operation is allowed, we increase the corresponding field in the audit table
     IF ln_result = 1 THEN
         UPDATE adt_report
             SET consults = consults + 1
@@ -402,10 +453,12 @@ BEGIN
 END;
 /
 
+-- this procedure deletes intermediary reports when tutors validate what becomes the final report.
 CREATE OR REPLACE PROCEDURE prc_delete_intermediary_reports
 (pn_id_report INT, pd_submitted DATE, pn_id_student INT, pn_id_instructions INT)
 AS
-    PRAGMA AUTONOMOUS_TRANSACTION;
+    -- this allows this procedure to be autonomous which allows us to test it in a select
+	PRAGMA AUTONOMOUS_TRANSACTION;
 BEGIN
     DELETE FROM tab_report
         WHERE id <> pn_id_report
@@ -416,10 +469,12 @@ BEGIN
 END;
 /
 
+-- this trigger checks that every final report has at least one keyword
 CREATE OR REPLACE TRIGGER trg_report_validation
 AFTER update OR insert
 ON tab_report
 FOR EACH ROW
+-- fires only when the report becomes final
 WHEN (new.is_company_vetted = 1 AND new.is_pedag_vetted = 1)
 DECLARE
     ln_keyword_count INT;
@@ -434,14 +489,15 @@ BEGIN
         RAISE le_not_enough_keywords;
     END IF;
 
+    -- if it has at least one keyword, we also delete intermediary reports
     prc_delete_intermediary_reports(:new.id, :new.submitted, :new.id_student, :new.id_instructions);
-
 EXCEPTION
     WHEN le_not_enough_keywords THEN
         RAISE_APPLICATION_ERROR(-20005, 'Expected at least one tab_keyword for this report.');
 END;
 /
 
+-- checks if no teacher hire date is in the future
 CREATE OR REPLACE TRIGGER trg_teacher_hired_date
 BEFORE INSERT OR UPDATE ON tab_teacher
 FOR EACH ROW
@@ -458,6 +514,7 @@ EXCEPTION
 END;
 /
 
+-- checks if the report is submitted before its deadline
 CREATE OR REPLACE TRIGGER trg_report_deadline
 BEFORE INSERT OR UPDATE OF submitted ON tab_report
 FOR EACH ROW
@@ -480,6 +537,7 @@ EXCEPTION
 END;
 /
 
+-- creates a matching audit record for each report
 CREATE OR REPLACE TRIGGER trg_adt_report
 AFTER INSERT ON tab_report
 FOR EACH ROW
@@ -489,6 +547,7 @@ BEGIN
 END;
 /
 
+-- creates a matching audit record for each keyword
 CREATE OR REPLACE TRIGGER trg_adt_keyword
 AFTER INSERT ON tab_keyword
 FOR EACH ROW
@@ -498,6 +557,42 @@ BEGIN
 END;
 /
 
+CREATE OR REPLACE TRIGGER trg_student_promotion
+AFTER UPDATE OR INSERT
+ON tab_student
+FOR EACH ROW
+DECLARE
+    ln_current_prom VARCHAR2(64);
+    ln_current_year INT;
+    ln_current_month INT;
+
+    ln_chk_promotion INT;
+    le_wrong_promotion EXCEPTION;
+BEGIN
+    SELECT EXTRACT(YEAR FROM SYSDATE) 
+        INTO ln_current_year 
+        FROM DUAL;
+
+    SELECT EXTRACT(MONTH FROM SYSDATE) 
+        INTO ln_current_month 
+        FROM DUAL;
+
+    IF (:new.promotion > 0 AND ln_current_month < 13) THEN
+        ln_current_year := ln_current_year - 1;
+    END IF;
+    
+    ln_chk_promotion := ln_current_year + (6 - :new.id_study_level) - :new.promotion;
+    
+    IF ln_chk_promotion <> 0 and :new.id_study_level <> 6 THEN
+        RAISE le_wrong_promotion;
+    END IF;
+
+    EXCEPTION
+        WHEN le_wrong_promotion THEN
+            RAISE_APPLICATION_ERROR(-20006, 'Inconsistency between the promotion of the student and his group');
+END;
+/
+-- sets the date format for the rest of the session
 ALTER SESSION SET NLS_DATE_FORMAT = 'DD-MM-YYYY';
 
 INSERT INTO tab_instructions (guidelines, deadline) VALUES ('Write down a tab_report of your internship', '26-03-2021');
@@ -565,6 +660,7 @@ INSERT INTO tab_study_level (id, label) VALUES (2, 'L2');
 INSERT INTO tab_study_level (id, label) VALUES (3, 'L3');
 INSERT INTO tab_study_level (id, label) VALUES (4, 'M1');
 INSERT INTO tab_study_level (id, label) VALUES (5, 'M2');
+INSERT INTO tab_study_level (id, label) VALUES (6, 'OUT');
 
 INSERT INTO tab_user (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Slayer', 'Doom', '666:/chainsaw.jpg', '0666136660', 'doomslayer@rip.tear', 'AA!45aaass', 0);
 INSERT INTO tab_user (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('John', 'Carmack', '/home/carmack/pictures/armadillo.png', '0498684962', 'johnc@idsoftware.com', 'f1aA6aa@', 1);
@@ -646,20 +742,20 @@ INSERT INTO tab_major (label, id_major_director) VALUES ('Bioengineering', 9);
 INSERT INTO tab_major (label, id_major_director) VALUES ('New energies', 12);
 INSERT INTO tab_major (label, id_major_director) VALUES ('Avionics and Space', 11);
 
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (14, 2001, 0, 3, 4);
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (15, 2015, 0, 8, 2);
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (16, 1997, 1, 7, 2);
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (17, 2013, 0, 7, 1);
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (18, 2013, 1, 2, 2);
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (19, 1986, 1, 3, 2);
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (20, 1980, 0, 8, 2);
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (21, 2015, 1, 6, 1);
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (22, 1988, 1, 6, 4);
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (23, 1981, 1, 8, 3);
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (24, 1983, 0, 7, 2);
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (25, 1974, 1, 8, 3);
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (26, 1987, 1, 5, 1);
-INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (27, 1986, 1, 4, 1);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (14, 2021, 0, 3, 4);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (15, 2023, 0, 8, 2);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (16, 2023, 1, 7, 2);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (17, 2024, 0, 7, 1);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (18, 2023, 1, 2, 2);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (19, 2023, 1, 3, 2);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (20, 2023, 0, 8, 2);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (21, 2024, 1, 6, 1);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (22, 2021, 1, 6, 4);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (23, 2022, 1, 8, 3);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (24, 2023, 0, 7, 2);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (25, 2022, 1, 8, 3);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (26, 2024, 1, 5, 1);
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (27, 2024, 1, 4, 1);
 
 INSERT INTO rel_performs (id_student, id_instructions) VALUES (22, 3);
 INSERT INTO rel_performs (id_student, id_instructions) VALUES (24, 3);
@@ -874,7 +970,7 @@ SELECT tab_report.id, tab_report.title, adt_report.consults
 
 -- consulting a tab_report
 BEGIN
-        prc_report_consult(20, 1);
+    prc_report_consult(20, 1);
 END;
 /
 
@@ -944,39 +1040,5 @@ BEGIN
         WHERE id = ln_last_report;
 
     prc_report_print(ln_last_report_student, ln_last_report);
-END;
-/CREATE OR REPLACE TRIGGER trg_student_promotion
-AFTER UPDATE OR INSERT
-ON tab_student
-FOR EACH ROW
-DECLARE
-    ln_current_prom VARCHAR2(64);
-    ln_current_year INT;
-    ln_current_month INT;
-
-    ln_chk_promotion INT;
-    le_wrong_promotion EXCEPTION;
-BEGIN
-    SELECT EXTRACT(YEAR FROM SYSDATE) 
-        INTO ln_current_year 
-        FROM DUAL;
-
-    SELECT EXTRACT(MONTH FROM SYSDATE) 
-        INTO ln_current_month 
-        FROM DUAL;
-
-    IF (:new.promotion > 0 AND ln_current_month < 13) THEN
-        ln_current_year := ln_current_year - 1;
-    END IF;
-
-    ln_chk_promotion := ln_current_year + (5 - :new.id_study_level) - :new.promotion;
-    
-    IF ln_chk_promotion <> 0 THEN
-        RAISE le_wrong_promotion;
-    END IF;
-
-    EXCEPTION
-        WHEN le_wrong_promotion THEN
-            RAISE_APPLICATION_ERROR(-20005, 'Inconsistency between the promotion of the student and his group');
 END;
 /
