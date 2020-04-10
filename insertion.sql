@@ -1,3 +1,4 @@
+-- sets the date format for the rest of the session
 ALTER SESSION SET NLS_DATE_FORMAT = 'DD-MM-YYYY';
 
 INSERT INTO tab_instructions (guidelines, deadline) VALUES ('Write down a tab_report of your internship', '26-03-2021');
