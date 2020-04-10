@@ -42,8 +42,8 @@
 
 |       Naming       |         Meaning          |       Example        |
 | :----------------: | :----------------------: | :------------------: |
-|  Starts with `p`   |        Parameter         |     `pn_id_user`     |
 |  Starts with `l`   |      Local variable      |     `ln_id_user`     |
+|  Starts with `p`   |    Parameter variable    |     `pn_id_user`     |
 | Second char is `n` | Variable of type number  |     `ln_id_user`     |
 | Second char is `v` | Variable of type varchar |     `pv_keyword`     |
 | Second char is `c` |     Explicit cursor      |     `lc_reports`     |
@@ -63,16 +63,16 @@
 
 ## Error Management
 
-| ERRORS  CODE | DESCRIPTION                                                            |
-| :----------: | :--------------------------------------------------------------------- |
-|    -20013    | User must be a user of My Efrei.                                       |
-|    -20012    | The report has not been validated, action aborted.                     |
-|    -20011    | Confidentiality settings disable this action.                          |
-|    -20010    | No records were found for either the report id or student id, or both. |
-|    -20005    | Expected at least one keyword for this report.                         |
-|    -20004    | Keyword not found                                                      |
-|    -20003    | The hired date can not be in the future.                               |
-|    -20002    | The report is late, the deadline is over.                              |
+| Error codes |                              Description                               |
+| :---------: | :--------------------------------------------------------------------: |
+|   -20002    |               The report is late, the deadline is over.                |
+|   -20003    |                The hired date can not be in the future.                |
+|   -20004    |                           Keyword not found                            |
+|   -20005    |             Expected at least one keyword for this report.             |
+|   -20011    |             Confidentiality settings disable this action.              |
+|   -20012    |           The report has not been validated, action aborted.           |
+|   -20010    | No records were found for either the report id or student id, or both. |
+|   -20013    |                    User must be a user of My Efrei.                    |
 
 <div style="page-break-after: always;"/>
 
