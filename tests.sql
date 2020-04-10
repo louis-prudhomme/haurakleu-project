@@ -7,7 +7,7 @@ SELECT tab_keyword.word, adt_keyword.searches
         ON tab_keyword.id = adt_keyword.id_keyword
     WHERE tab_keyword.word = 'JEE';
 
--- test get tab_report by tab_keyword
+-- test get report by keyword
 SET SERVEROUTPUT ON SIZE 1000000
 DECLARE
     lc_results SYS_REFCURSOR;
@@ -26,7 +26,7 @@ BEGIN
 END;
 /
 
--- we select the number of views after (a view rel_has been gained from the previous instruction)
+-- we select the number of views after (a view has been gained from the previous instruction)
 SELECT tab_keyword.word, adt_keyword.searches
     FROM adt_keyword
     LEFT JOIN tab_keyword
@@ -41,7 +41,7 @@ SELECT tab_keyword.word, adt_keyword.searches
     WHERE ROWNUM < 10
     ORDER BY adt_keyword.searches DESC;
 
--- trying to select a tab_keyword that doesnt exist, will raise an exception
+-- trying to select a keyword that doesnt exist, will raise an exception
 SET SERVEROUTPUT ON SIZE 1000000
 DECLARE
     lc_results SYS_REFCURSOR;
@@ -88,13 +88,13 @@ SELECT tab_report.id, tab_report.title, adt_report.consults
     WHERE ROWNUM < 10
     ORDER BY adt_report.consults DESC;
 
--- consulting a tab_report
+-- consulting a report
 BEGIN
     prc_report_consult(20, 1);
 END;
 /
 
--- select the most consulted reports after is rel_has been updated
+-- select the most consulted reports after is has been updated
 SELECT tab_report.id, tab_report.title, adt_report.consults
     FROM tab_report
     LEFT JOIN adt_report
@@ -102,26 +102,26 @@ SELECT tab_report.id, tab_report.title, adt_report.consults
     WHERE ROWNUM < 10
     ORDER BY adt_report.consults DESC;
 
--- trying to consult the same tab_report wit another user will raise an exception because it rel_has not been validated and this user hasn’t partticpated in the tab_report
+-- trying to consult the same report wit another user will raise an exception because it has not been validated and this user hasn’t partticpated in the tab_report
 BEGIN
     prc_report_consult(1, 1);
 END;
 /
 
--- trying to insert a validated tab_report without keywords crashes
+-- trying to insert a validated the report without keywords crashes
 INSERT INTO tab_report (title, is_pedag_vetted, is_company_vetted, id_student, id_company, id_pedag_tutor, id_company_tutor, id_conf_level, id_instructions) VALUES ('1613 Ovjig Pass', 1, 1, 18, 6, 12, 3, 2, 2);
 
 -- inserting it not validated
 INSERT INTO tab_report (title, is_pedag_vetted, is_company_vetted, id_student, id_company, id_pedag_tutor, id_company_tutor, id_conf_level, id_instructions) VALUES ('1613 Ovjig Pass', 1, 0, 18, 6, 12, 3, 2, 2);
 
---adding tab_keyword
+--adding the keyword
 INSERT INTO rel_has VALUES((SELECT max(id) FROM tab_report), 1);
 
--- updating tab_report to validate it
+-- updating the report to validate it
 UPDATE tab_report SET is_company_vetted = 1
     WHERE id = (SELECT max(id) FROM tab_report);
 
--- displaying the tab_report
+-- displaying the report
 SELECT * FROM tab_report
     WHERE id = (SELECT max(id) FROM tab_report);
 
