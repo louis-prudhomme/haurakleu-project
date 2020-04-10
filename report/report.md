@@ -96,6 +96,8 @@
 
 ## Trigger TRG_STUDENT_PROMOTION
 
+
+
 ## Function FUN_IS_ALLOWED
 
 ## Procedures PRC_REPORT_*
