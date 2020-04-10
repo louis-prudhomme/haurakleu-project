@@ -42,3 +42,5 @@
 # E/R diagram
 
 ![E/R diagram](./../model/harakleu-model.png)
+
+<div style="page-break-after: always;"/>
