@@ -162,3 +162,10 @@ BEGIN
     prc_report_print(ln_last_report_student, ln_last_report);
 END;
 /
+
+-- test TRIGGER trg_student_promotion : 
+-- We add a new user 
+INSERT INTO tab_user (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('El Professor', 'Sergio', 'https://fr.wikipedia.org/wiki/La_casa_de_papel', '0824489570', 'sergio@jidcez.et', 'he4@3Cdawre', 0);
+
+-- then we add a new student with a wrong promotion date. Indeed, he is a L2 so his promotion date must be 2023 so it throws an error
+INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (28, 2024, 1, 4, 2);
