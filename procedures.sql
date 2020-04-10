@@ -9,6 +9,8 @@ BEGIN
     -- we ask this function to know if the given user has permission on this report
     -- the 1 represents the maximum level of confidentiality for this operation
     ln_result := fun_is_allowed(pn_id_user, pn_id_report, 1);
+
+    -- if the operation is allowed, we increase the corresponding field in the audit table
     IF ln_result = 1 THEN
         UPDATE adt_report
             SET prints = prints + 1
@@ -29,6 +31,8 @@ BEGIN
     -- we ask this function to know if the given user has permission on this report
     -- the 1 represents the maximum level of confidentiality for this operation
     ln_result := fun_is_allowed(pn_id_user, pn_id_report, 1);
+
+    -- if the operation is allowed, we increase the corresponding field in the audit table
     IF ln_result = 1 THEN
         UPDATE adt_report
             SET copies = copies + 1
@@ -49,6 +53,8 @@ BEGIN
     -- we ask this function to know if the given user has permission on this report
     -- the 1 represents the maximum level of confidentiality for this operation
     ln_result := fun_is_allowed(pn_id_user, pn_id_report, 1);
+
+    -- if the operation is allowed, we increase the corresponding field in the audit table
     IF ln_result = 1 THEN
         UPDATE adt_report
             SET downloads = downloads + 1
@@ -67,8 +73,10 @@ AS
     ln_result INT;
 BEGIN
     -- we ask this function to know if the given user has permission on this report
-    -- the 1 represents the maximum level of confidentiality for this operation
+    -- the 2 represents the maximum level of confidentiality for this operation
     ln_result := fun_is_allowed(pn_id_user, pn_id_report, 2);
+
+    -- if the operation is allowed, we increase the corresponding field in the audit table
     IF ln_result = 1 THEN
         UPDATE adt_report
             SET consults = consults + 1
