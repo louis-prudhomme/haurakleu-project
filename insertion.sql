@@ -144,7 +144,7 @@ INSERT INTO tab_major (label, id_major_director) VALUES ('Databases', 10);
 INSERT INTO tab_major (label, id_major_director) VALUES ('Artificial Intelligence', 8);
 INSERT INTO tab_major (label, id_major_director) VALUES ('Bioengineering', 9);
 INSERT INTO tab_major (label, id_major_director) VALUES ('New energies', 12);
-INSERT INTO tab_major (label, id_major_director) VALUES ('Finger', 11);
+INSERT INTO tab_major (label, id_major_director) VALUES ('Avionics and Space', 11);
 
 INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (14, 2001, 0, 3, 4);
 INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (15, 2015, 0, 8, 2);
