@@ -110,8 +110,8 @@ BEGIN
         INTO ln_current_month 
         FROM DUAL;
 
-    -- if currently before septembre, take previous year as reference
-    IF (:new.promotion > 0 AND ln_current_month < 13) THEN
+    -- if currently before september, take previous year as reference
+    IF (ln_current_month > 0 AND ln_current_month < 10) THEN
         ln_current_year := ln_current_year - 1;
     END IF;
     
