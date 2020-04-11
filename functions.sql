@@ -142,8 +142,8 @@ BEGIN
 END fun_reports_by_keyword;
 /
 
--- returns the first n most wanted reports, n being the parameter given to the function
-CREATE OR REPLACE FUNCTION fun_most_wanted_reports
+-- returns the first n most wanted keywords, n being the parameter given to the function
+CREATE OR REPLACE FUNCTION fun_most_wanted_keywords
 (pn_take_first NUMBER)
 RETURN SYS_REFCURSOR
 AS

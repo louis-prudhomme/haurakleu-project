@@ -18,7 +18,6 @@
   - [Report statistics](#report-statistics)
   - [Report](#report)
   - [Confidentiality](#confidentiality)
-  - [Error management :](#error-management-1)
   - [Function FUN_MOST_WANTED_REPORTS (ne garder que celle-ci ou FUN_REPORTS_BY_KEYWORD ?)](#function-funmostwantedreports-ne-garder-que-celle-ci-ou-funreportsbykeyword)
   - [Function FUN_REPORTS_BY_KEYWORD (ne garder que celle-ci ou FUN_MOST_WANTED_REPORTS ?)](#function-funreportsbykeyword-ne-garder-que-celle-ci-ou-funmostwantedreports)
   - [Trigger TRG_REPORT_VALIDATION](#trigger-trgreportvalidation)
@@ -112,6 +111,18 @@ In addition, only people with access to MyEfrei can access the report after vali
 Easy report search by : 
 
 - Keyword
+
+The function `fun_reports_by_keyword` allows to obtain a cursor on all the reports tagged with the provided keyword. 
+
+In addition, this function is marked as `PRAGMA`, it allows it to be autonomous and thus we can test it in a select.
+This function works as follows : 
+1. It gets the id of the provided keyword
+2. It opens the cursor and point it on all reports related to the specified keyword
+3. It reports where found, it update the keyword audit table. 
+4. It returns the cursor
+
+Furthermore, if there isn't any keyword with this label, the function raises a -20004 APPLICATION ERROR. 
+
 - Category (internship or apprentices) thanks to a select query :  
 ```sql
 select id from report where id_student in (select distinct id from student where is_apprentice = 1);
@@ -196,9 +207,6 @@ In fact, `FUN_IS_ALLOWED` does all the heavy lifting for these procedures ; ther
 1. They all update different fields in the  audit table `ADT_REPORT` (`prints` for `PRC_REPORT_PRINT`, *etc*)
 2. They may have different confidentiality levels ; as per the requirements, we consider `COPY`, `DOWNLOAD` and `PRINT` as level-1 confidentiality operations (which can only be executed on a level-1 confidentiality report) and `CONSULT` to be a level-2 (execution up to level-2 report)
 
-## Error management : 
-
-When searching for a report by keyword, if the keyword does not already exist in the database, send an error message.
 
 
 ## Function FUN_MOST_WANTED_REPORTS (ne garder que celle-ci ou FUN_REPORTS_BY_KEYWORD ?)

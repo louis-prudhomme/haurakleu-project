@@ -69,7 +69,7 @@ DECLARE
     lv_title_keyword VARCHAR2(64);
     ln_researches_keyword NUMBER;
 BEGIN
-    lc_results := fun_most_wanted_reports(5);
+    lc_results := fun_most_wanted_keywords(5);
 
     LOOP
         FETCH lc_results

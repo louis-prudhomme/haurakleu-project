@@ -17,7 +17,7 @@ DROP PROCEDURE prc_report_print;
 -- functions
 DROP FUNCTION fun_is_allowed;
 DROP FUNCTION fun_reports_by_keyword;
-DROP FUNCTION fun_most_wanted_reports;
+DROP FUNCTION fun_most_wanted_keywords;
 
 -- data tables, relations tables and audit tables
 DROP TABLE adt_keyword;
@@ -325,7 +325,7 @@ CREATE TABLE adt_keyword
 
 -- Functions : 
 
--- this function plays a centrail role in the user's interaction with reports
+-- this function plays a central role in the user's interaction with reports
 -- it checks for a user, a report and an operation confidentiality level if the operation is allowed
 -- it returns one or crashes
 CREATE OR REPLACE FUNCTION fun_is_allowed
@@ -467,8 +467,8 @@ BEGIN
 END fun_reports_by_keyword;
 /
 
--- returns the first n most wanted reports, n being the parameter given to the function
-CREATE OR REPLACE FUNCTION fun_most_wanted_reports
+-- returns the first n most wanted keywords, n being the parameter given to the function
+CREATE OR REPLACE FUNCTION fun_most_wanted_keywords
 (pn_take_first NUMBER)
 RETURN SYS_REFCURSOR
 AS
@@ -705,8 +705,8 @@ BEGIN
         INTO ln_current_month 
         FROM DUAL;
 
-    -- if currently before septembre, take previous year as reference
-    IF (:new.promotion > 0 AND ln_current_month < 13) THEN
+    -- if currently before september, take previous year as reference
+    IF (ln_current_month > 0 AND ln_current_month < 10) THEN
         ln_current_year := ln_current_year - 1;
     END IF;
     
@@ -1113,7 +1113,7 @@ DECLARE
     lv_title_keyword VARCHAR2(64);
     ln_researches_keyword NUMBER;
 BEGIN
-    lc_results := fun_most_wanted_reports(5);
+    lc_results := fun_most_wanted_keywords(5);
 
     LOOP
         FETCH lc_results
