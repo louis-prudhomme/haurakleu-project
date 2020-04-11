@@ -1,9 +1,13 @@
 -- sets the date format for the rest of the session
 ALTER SESSION SET NLS_DATE_FORMAT = 'DD-MM-YYYY';
 
+-- insert in the table instructions
+
 INSERT INTO tab_instructions (guidelines, deadline) VALUES ('Write down a tab_report of your internship', '26-03-2021');
 INSERT INTO tab_instructions (guidelines, deadline) VALUES ('Write down a tab_report of your apprenticeship', '02-12-2021');
 INSERT INTO tab_instructions (guidelines, deadline) VALUES ('Write down a tab_report of your internship ; it must be fourteen pages long', '26-01-2021');
+
+-- inserts in the table company
 
 INSERT INTO tab_company (name) VALUES ('MyCrauSauft');
 INSERT INTO tab_company (name) VALUES ('Haurakleu');
@@ -26,9 +30,13 @@ INSERT INTO tab_company (name) VALUES ('Credit naval');
 INSERT INTO tab_company (name) VALUES ('Lepetit');
 INSERT INTO tab_company (name) VALUES ('Ricard');
 
+-- inserts in the table confidentiality level
+
 INSERT INTO tab_confidentiality_level (id, label) VALUES (1, 'Normal');
 INSERT INTO tab_confidentiality_level (id, label) VALUES (2, 'Low level');
 INSERT INTO tab_confidentiality_level (id, label) VALUES (3, 'High level');
+
+-- inserts in the table teaching field
 
 INSERT INTO tab_teaching_field (label) VALUES ('Object-Oriented Programming');
 INSERT INTO tab_teaching_field (label) VALUES ('Database Administration');
@@ -61,12 +69,16 @@ INSERT INTO tab_teaching_field (label) VALUES ('Advanced .NET Core');
 INSERT INTO tab_teaching_field (label) VALUES ('Advanced DevOps');
 INSERT INTO tab_teaching_field (label) VALUES ('Advanced Reali-time systems');
 
+-- inserts in the table study level
+
 INSERT INTO tab_study_level (id, label) VALUES (1, 'L1');
 INSERT INTO tab_study_level (id, label) VALUES (2, 'L2');
 INSERT INTO tab_study_level (id, label) VALUES (3, 'L3');
 INSERT INTO tab_study_level (id, label) VALUES (4, 'M1');
 INSERT INTO tab_study_level (id, label) VALUES (5, 'M2');
 INSERT INTO tab_study_level (id, label) VALUES (6, 'OUT');
+
+-- inserts in the table user
 
 INSERT INTO tab_user (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Slayer', 'Doom', '666:/chainsaw.jpg', '0666136660', 'doomslayer@rip.tear', 'AA!45aaass', 0);
 INSERT INTO tab_user (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('John', 'Carmack', '/home/carmack/pictures/armadillo.png', '0498684962', 'johnc@idsoftware.com', 'f1aA6aa@', 1);
@@ -95,13 +107,17 @@ INSERT INTO tab_user (first_name, last_name, avatar_path, phone_number, email, p
 INSERT INTO tab_user (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Franklin', 'Fields', 'http://boti.pg/hakkago', '0265799381', 'lub@nek.ge', 'mofac5@Dok', 1);
 INSERT INTO tab_user (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Willie', 'Stewart', 'http://bud.az/pebo', '0585979273', 'uswespic@piule.vc', 'li6n@Xiasn', 1);
 INSERT INTO tab_user (first_name, last_name, avatar_path, phone_number, email, password, is_my_user) VALUES ('Flora', 'Norris', 'http://savi.gb/poimo', '0824489470', 'kenevezi@jidcez.et', 'he4@3Cdawre', 0);
-	
+
+-- inserts in the table company tutor
+
 INSERT INTO tab_company_tutor (id, job) VALUES (1, 'Developer');
 INSERT INTO tab_company_tutor (id, job) VALUES (2, 'Project manager');
 INSERT INTO tab_company_tutor (id, job) VALUES (3, 'HR');
 INSERT INTO tab_company_tutor (id, job) VALUES (4, 'Ingeneer');
 INSERT INTO tab_company_tutor (id, job) VALUES (5, 'Developer');
 INSERT INTO tab_company_tutor (id, job) VALUES (6, 'Lead developer');
+
+-- inserts in the table teacher
 
 INSERT INTO tab_teacher (id, hired) VALUES (7, '23-04-2008');
 INSERT INTO tab_teacher (id, hired) VALUES (8, '25-09-2008');
@@ -110,6 +126,8 @@ INSERT INTO tab_teacher (id, hired) VALUES (10, '28-09-2013');
 INSERT INTO tab_teacher (id, hired) VALUES (11, '10-05-2015');
 INSERT INTO tab_teacher (id, hired) VALUES (12, '17-12-2016');
 INSERT INTO tab_teacher (id, hired) VALUES (13, '22-10-2018');
+
+-- inserts in the table teaches
 
 INSERT INTO rel_teaches (id_teacher, id_field) VALUES (9, 16);
 INSERT INTO rel_teaches (id_teacher, id_field) VALUES (11, 17);
@@ -136,6 +154,8 @@ INSERT INTO rel_teaches (id_teacher, id_field) VALUES (8, 15);
 INSERT INTO rel_teaches (id_teacher, id_field) VALUES (11, 9);
 INSERT INTO rel_teaches (id_teacher, id_field) VALUES (12, 6);
 
+-- inserts in the table major 
+
 INSERT INTO tab_major (label, id_major_director) VALUES ('Software engineering', 10);
 INSERT INTO tab_major (label, id_major_director) VALUES ('Business intelligence', 8);
 INSERT INTO tab_major (label, id_major_director) VALUES ('Solar panels', 7);
@@ -147,6 +167,8 @@ INSERT INTO tab_major (label, id_major_director) VALUES ('Artificial Intelligenc
 INSERT INTO tab_major (label, id_major_director) VALUES ('Bioengineering', 9);
 INSERT INTO tab_major (label, id_major_director) VALUES ('New energies', 12);
 INSERT INTO tab_major (label, id_major_director) VALUES ('Avionics and Space', 11);
+
+-- inserts in the table student
 
 INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (14, 2021, 0, 3, 4);
 INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (15, 2023, 0, 8, 2);
@@ -162,6 +184,8 @@ INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level)
 INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (25, 2022, 1, 8, 3);
 INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (26, 2024, 1, 5, 1);
 INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (27, 2024, 1, 4, 1);
+
+-- inserts in the table rel_performs
 
 INSERT INTO rel_performs (id_student, id_instructions) VALUES (22, 3);
 INSERT INTO rel_performs (id_student, id_instructions) VALUES (24, 3);
@@ -179,6 +203,8 @@ INSERT INTO rel_performs (id_student, id_instructions) VALUES (25, 1);
 INSERT INTO rel_performs (id_student, id_instructions) VALUES (21, 3);
 INSERT INTO rel_performs (id_student, id_instructions) VALUES (27, 2);
 INSERT INTO rel_performs (id_student, id_instructions) VALUES (27, 1);
+
+-- inserts in the table report
 
 INSERT INTO tab_report (title, is_pedag_vetted, is_company_vetted, id_student, id_company, id_pedag_tutor, id_company_tutor, id_conf_level, id_instructions) VALUES ('1554 Ulakeg View', 0, 0, 20, 9, 11, 3, 1, 3);
 INSERT INTO tab_report (title, is_pedag_vetted, is_company_vetted, id_student, id_company, id_pedag_tutor, id_company_tutor, id_conf_level, id_instructions) VALUES ('1609 Gawi Key', 0, 1, 27, 2, 7, 3, 2, 1);
@@ -210,6 +236,8 @@ INSERT INTO tab_report (title, is_pedag_vetted, is_company_vetted, id_student, i
 INSERT INTO tab_report (title, is_pedag_vetted, is_company_vetted, id_student, id_company, id_pedag_tutor, id_company_tutor, id_conf_level, id_instructions) VALUES ('570 Zife Manor', 0, 1, 20, 7, 10, 1, 2, 1);
 INSERT INTO tab_report (title, is_pedag_vetted, is_company_vetted, id_student, id_company, id_pedag_tutor, id_company_tutor, id_conf_level, id_instructions) VALUES ('1613 Ovjig Pass', 1, 0, 18, 6, 12, 3, 2, 2);
 
+-- inserts in the table keyword
+
 INSERT INTO tab_keyword (word) VALUES ('JEE');
 INSERT INTO tab_keyword (word) VALUES ('Bank');
 INSERT INTO tab_keyword (word) VALUES ('Oracle');
@@ -223,6 +251,8 @@ INSERT INTO tab_keyword (word) VALUES ('Cloud');
 INSERT INTO tab_keyword (word) VALUES ('SI');
 INSERT INTO tab_keyword (word) VALUES ('Systèmes d’information');
 INSERT INTO tab_keyword (word) VALUES ('Big Data');
+
+-- inserts in the table rel_has
 
 INSERT INTO rel_has (id_report, id_keyword) VALUES (21, 3);
 INSERT INTO rel_has (id_report, id_keyword) VALUES (15, 11);
