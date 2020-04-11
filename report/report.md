@@ -18,9 +18,6 @@
   - [Report statistics](#report-statistics)
   - [Report](#report)
   - [Confidentiality](#confidentiality)
-  - [Function FUN_MOST_WANTED_REPORTS (ne garder que celle-ci ou FUN_REPORTS_BY_KEYWORD ?)](#function-funmostwantedreports-ne-garder-que-celle-ci-ou-funreportsbykeyword)
-  - [Function FUN_REPORTS_BY_KEYWORD (ne garder que celle-ci ou FUN_MOST_WANTED_REPORTS ?)](#function-funreportsbykeyword-ne-garder-que-celle-ci-ou-funmostwantedreports)
-  - [Trigger TRG_REPORT_VALIDATION](#trigger-trgreportvalidation)
 - [Problems encountered](#problems-encountered)
   - [Fucking Oracle](#fucking-oracle)
   - [Oracle = Cancer](#oracle--cancer)
@@ -163,19 +160,29 @@ If the result is inconsistent, it raises a -20006 APPLICATION ERROR.
 
 ## Report statistics 
 
-- Most wanted report
-- Number of view per report
-- Most wanted keyword
-- Number of consultation for each report
-- Number of copy for each report
-- Number of printing for each report
-- Number of downloading for each report
+- Most wanted Keywords 
+
+The function `fun_most_wanted_keywords`returns a cursor pointing on the first n most wanted keywords, n being the parameter given to the function. 
+
+- Most wanted reports
+
+The function `fun_most_wanted_reports`returns a cursor pointing on the first n most wanted reports, n being the parameter given to the function.
+
+- Number of consultation / copy / printing / downloading for each report
+
+The table `adt_report` thanks to a simple SELECT allows to get the number of consultation, copies, prints and download for each report. 
 
 ## Report
 
-All students have to submit intermediate documents but only the final report will be saved
-Submit the report before a deadline
-Become readable for the students and teachers only after validation of both tutors
+- All students have to submit intermediate documents but only the final report will be saved
+
+When a report is declared as final, i.e when it has been vetted by the company tutor and the pedagogic tutor, the trigger `trg_report_validation` will call the procedure `prc_delete_intermediary_reports` in order to delete intermediary reports. 
+
+- Submit the report before a deadline
+
+After inserting or updating of the field submitted on `tab_report`, the trigger `trg_report_deadline` checks if the report submission date is greater than the deadline. If so, a -20002 APPLICATION ERROR is raised. 
+
+- Become readable for the students and teachers only after validation of both tutors
 
 ## Confidentiality 
 
@@ -206,14 +213,6 @@ Besides, they are very few and slight differences between them ; they basically 
 In fact, `FUN_IS_ALLOWED` does all the heavy lifting for these procedures ; there is only two differences between all of them : 
 1. They all update different fields in the  audit table `ADT_REPORT` (`prints` for `PRC_REPORT_PRINT`, *etc*)
 2. They may have different confidentiality levels ; as per the requirements, we consider `COPY`, `DOWNLOAD` and `PRINT` as level-1 confidentiality operations (which can only be executed on a level-1 confidentiality report) and `CONSULT` to be a level-2 (execution up to level-2 report)
-
-
-
-## Function FUN_MOST_WANTED_REPORTS (ne garder que celle-ci ou FUN_REPORTS_BY_KEYWORD ?)
-
-## Function FUN_REPORTS_BY_KEYWORD (ne garder que celle-ci ou FUN_MOST_WANTED_REPORTS ?)
-
-## Trigger TRG_REPORT_VALIDATION
 
 # Problems encountered
 
