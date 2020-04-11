@@ -100,6 +100,17 @@
 
 ## Function FUN_IS_ALLOWED
 
+This function plays a central role in the user's interaction with reports. It takes the `ID`s of a user and a report, as well as an operation’s confidentiality level as an input. 
+Then, it pertforms a serie of checks :
+- Checks if both the report and the user exist
+- Checks if the operation is permitted for this report (printing, for instance, is forbidden for level-2 confidentiality reports)
+- Checks if the user is also a My Efrei user or if he was involved in the making of the report (for company tutors, mainly)
+- Checks if the report has been validated or if he was involved in the making of the report (non-validated reports cannot accept incoming operations)
+
+If any of those checks fails, the function raises an exception. Otherwise, it simply returns `1`.
+
+This function is not directly used by the user, but rather a common denominator for the procedures detailed thereafter.
+
 ## Procedures PRC_REPORT_*
 
 ## Function FUN_MOST_WANTED_REPORTS (ne garder que celle-ci ou FUN_REPORTS_BY_KEYWORD ?)
