@@ -159,6 +159,6 @@ BEGIN
             WHERE ROWNUM <= pn_take_first;
 
     RETURN lc_most_wanted_keywords;
-END fun_most_wanted_reports;
+END fun_most_wanted_keywords;
 /
 
