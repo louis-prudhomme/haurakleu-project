@@ -113,6 +113,19 @@ This function is not directly used by the user, but rather a common denominator 
 
 ## Procedures PRC_REPORT_*
 
+Those procedures represent the ability of the user to interact with reports. Their are four of them, `CONSULT`, `COPY`, `DOWNLOAD` and `PRINT`. 
+
+Their name are pretty self-explanatory in what each procedure represents.
+
+Besides, they are very few and slight differences between them ; they basically work in the exact same way.
+
+- They call to `FUN_IS_ALLOWED` to know if the given user can perform the operation on the given report
+- If `FUN_IS_ALLOWED` greenlights the request, the corresponding field in audit table `ADT_REPORT` is incremented by one on the record of the given report
+
+In fact, `FUN_IS_ALLOWED` does all the heavy lifting for these procedures ; there is only two differences between all of them : 
+1. They all update different fields in the  audit table `ADT_REPORT` (`prints` for `PRC_REPORT_PRINT`, *etc*)
+2. They may have different confidentiality levels ; as per the requirements, we consider `COPY`, `DOWNLOAD` and `PRINT` as level-1 confidentiality operations (which can only be executed on a level-1 confidentiality report) and `CONSULT` to be a level-2 (execution up to level-2 report)
+
 ## Function FUN_MOST_WANTED_REPORTS (ne garder que celle-ci ou FUN_REPORTS_BY_KEYWORD ?)
 
 ## Function FUN_REPORTS_BY_KEYWORD (ne garder que celle-ci ou FUN_MOST_WANTED_REPORTS ?)
