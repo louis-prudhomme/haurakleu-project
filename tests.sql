@@ -170,3 +170,6 @@ INSERT INTO tab_user (first_name, last_name, avatar_path, phone_number, email, p
 
 -- then we add a new student with a wrong promotion date. Indeed, he is a L2 so his promotion date must be 2023 so it throws an error
 INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level) VALUES (28, 2024, 1, 4, 2);
+
+-- Category search (internship or apprentices) 
+select id from tab_report where id_student in (select distinct id from tab_student where is_apprentice = 1);

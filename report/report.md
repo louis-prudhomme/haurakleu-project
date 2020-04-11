@@ -1,11 +1,13 @@
 # Mélanie Marques <!-- omit in toc -->
 # Louis Prud’homme <!-- omit in toc -->
+## Project: M1-SE <!-- omit in toc -->
+## Advanced Databases for Software Engineering <!-- omit in toc -->
+
 
 <div style="page-break-after: always;"/>
 
 # Table of contents
 - [Table of contents](#table-of-contents)
-- [Report description](#report-description)
 - [Introduction - short description of project subject](#introduction---short-description-of-project-subject)
 - [Naming conventions](#naming-conventions)
   - [Variables](#variables)
@@ -13,36 +15,19 @@
   - [Error Management](#error-management)
 - [E/R diagram](#er-diagram)
 - [Implementation of important issues](#implementation-of-important-issues)
+  - [Data consistency](#data-consistency)
   - [Search](#search)
-  - [Check data consistency](#check-data-consistency)
-  - [Report statistics](#report-statistics)
   - [Report](#report)
+  - [Report statistics](#report-statistics)
   - [Confidentiality](#confidentiality)
 - [Problems encountered](#problems-encountered)
-  - [Fucking Oracle](#fucking-oracle)
-  - [Oracle = Cancer](#oracle--cancer)
   - [Subject understanding](#subject-understanding)
-  - [Virtual machine = de la merde](#virtual-machine--de-la-merde)
+  - [Virtual machine : not an ideal environment](#virtual-machine--not-an-ideal-environment)
+  - [Oracle errors management](#oracle-errors-management)
   - [Need to commit](#need-to-commit)
 - [Conclusion](#conclusion)
 
 <div style="page-break-after: always;"/>
-
-# Report description 
-
-> The deliverable consists of separate files; you can add at most three files on Moodle:
-> - the report : named name1_name2.pdf
-> - the script for populating the database + the script containing the different functions/queries.
-> The report must have between 5 and 10 pages. It includes an introduction, a short description of the project subject, some functions/queries for the most important issues of the project, a discussion of the encountered problems/difficulties, and a conclusion. 
-> The report should not explain your code in details, let alone include portions of your code: good code should be well self-commented. The code must be properly indented and commented. 
-> It must comply with the standard naming rules for variables and functions. 
-
-* [ ] The report must have between 5 and 10 pages.
-* [ ] It includes an introduction
-* [ ] short description of the project subject
-* [ ] some functions/queries for the most important issues of the project
-* [ ] a discussion of the encountered problems/difficulties
-* [ ] conclusion
 
 # Introduction - short description of project subject
 
@@ -51,8 +36,7 @@ The goal of this project is to develop an electronic document management system 
 Today, students must email their reports to tutors (businesses and academics). Apprentice students submit their reports on Moodle. Students can submit intermediate documents but only the final report is saved.
 
 In the solution that we propose, the system allows an easy search of documents, and makes them accessible.
-This research can be done by keyword, by category, title, etc. It allows the report to be submitted before a specified deadline. This report only becomes readable for students and teachers after validation by the tutors.
-In addition, only people with access to MyEfrei can access the report after validation.
+This research can be done by keyword, by category, title, etc. It allows the report to be submitted before a specified deadline. This report only becomes readable for students and teachers after validation by the tutors. In addition, only people with access to MyEfrei can access the report after validation.
 
 # Naming conventions
 
@@ -79,6 +63,8 @@ In addition, only people with access to MyEfrei can access the report after vali
 | Starts with `prc` |   Procedure    |  `prc_report_consult`   |
 | Starts with `trg` |    Trigger     | `trg_report_validation` |
 
+<div style="page-break-after: always;"/>
+
 ## Error Management
 
 | Error codes |                              Description                               |
@@ -103,37 +89,13 @@ In addition, only people with access to MyEfrei can access the report after vali
 
 # Implementation of important issues
 
-## Search 
-
-Easy report search by : 
-
-- Keyword
-
-The function `fun_reports_by_keyword` allows to obtain a cursor on all the reports tagged with the provided keyword. 
-
-In addition, this function is marked as `PRAGMA`, it allows it to be autonomous and thus we can test it in a select.
-This function works as follows : 
-1. It gets the id of the provided keyword
-2. It opens the cursor and point it on all reports related to the specified keyword
-3. It reports where found, it update the keyword audit table. 
-4. It returns the cursor
-
-Furthermore, if there isn't any keyword with this label, the function raises a -20004 APPLICATION ERROR. 
-
-- Category (internship or apprentices) thanks to a select query :  
-```sql
-select id from report where id_student in (select distinct id from student where is_apprentice = 1);
-```
-
-Other searches are possible (such as: by student name, title *etc...*) thanks to simple select 
-
-## Check data consistency 
+## Data consistency 
 
 To ensure the consistency of the data, we have undertaken to set up controls at the time of data insertion.
 
 - User emails
 
-Using a CHECK when creating the User table, we verify that the user's email is of the form `example @ example.fr`.
+Using a CHECK when creating the User table, we verify that the user's email is of the form `example@example.fr`.
 
 - Phone numbers
 
@@ -158,6 +120,45 @@ Indeed, when a report is declared final, that is to say when it has been vetted 
 The trigger `trg_student_promotion` checks if the promotion of the student matches its study level. To achieve this, it gets the current year and month. If the month is before september, we take the previous year as reference. Then we calculate the difference between calculated gratuating year and state graduating year.
 If the result is inconsistent, it raises a -20006 APPLICATION ERROR.
 
+<div style="page-break-after: always;"/>
+
+## Search 
+
+The solution we suggest allows easy report search by :  
+
+- Keyword
+
+The function `fun_reports_by_keyword` allows to obtain a cursor on all the reports tagged with the provided keyword. 
+
+In addition, this function is marked as `PRAGMA`, it allows it to be autonomous and thus we can test it in a select.
+This function works as follows : 
+1. It gets the id of the provided keyword
+2. It opens the cursor and point it on all reports related to the specified keyword
+3. It reports where found, it update the keyword audit table. 
+4. It returns the cursor
+
+Furthermore, if there isn't any keyword with this label, the function raises a -20004 APPLICATION ERROR. 
+
+- Category (internship or apprentices) thanks to a select query : 
+ 
+```sql
+select id from report where id_student in (select distinct id from student where is_apprentice = 1);
+```
+
+Other searches are possible (such as: by student name, title *etc...*) thanks to simple SELECT queries. 
+
+## Report
+
+- All students have to submit intermediate documents but only the final report will be saved
+
+When a report is declared as final, i.e when it has been vetted by the company tutor and the pedagogic tutor, the trigger `trg_report_validation` will call the procedure `prc_delete_intermediary_reports` in order to delete intermediary reports. 
+
+- Submit the report before a deadline
+
+After inserting or updating of the field submitted on `tab_report`, the trigger `trg_report_deadline` checks if the report submission date is greater than the deadline. If so, a -20002 APPLICATION ERROR is raised. 
+
+<div style="page-break-after: always;"/>
+
 ## Report statistics 
 
 - Most wanted Keywords 
@@ -170,19 +171,8 @@ The function `fun_most_wanted_reports`returns a cursor pointing on the first n m
 
 - Number of consultation / copy / printing / downloading for each report
 
-The table `adt_report` thanks to a simple SELECT allows to get the number of consultation, copies, prints and download for each report. 
+The table `adt_report` thanks to simple SELECT queries allows to get the number of consultation, copies, prints and download for each report. 
 
-## Report
-
-- All students have to submit intermediate documents but only the final report will be saved
-
-When a report is declared as final, i.e when it has been vetted by the company tutor and the pedagogic tutor, the trigger `trg_report_validation` will call the procedure `prc_delete_intermediary_reports` in order to delete intermediary reports. 
-
-- Submit the report before a deadline
-
-After inserting or updating of the field submitted on `tab_report`, the trigger `trg_report_deadline` checks if the report submission date is greater than the deadline. If so, a -20002 APPLICATION ERROR is raised. 
-
-- Become readable for the students and teachers only after validation of both tutors
 
 ## Confidentiality 
 
@@ -216,14 +206,20 @@ In fact, `FUN_IS_ALLOWED` does all the heavy lifting for these procedures ; ther
 
 # Problems encountered
 
-## Fucking Oracle
-
-## Oracle = Cancer
-
 ## Subject understanding
 
-## Virtual machine = de la merde
+The given subject being vague gave us a hard time to understand it. 
+
+## Virtual machine : not an ideal environment
+
+Working on a virtual machine considerably increases our working time. Indeed, we had to face many crashes, black screens, and bugs, sometimes resulting in data loss.
+
+## Oracle errors management
+
+Oracle error handling being quite imprecise, it is quite dificult to debug when our script had an error. 
 
 ## Need to commit
 
 # Conclusion
+
+This project allow us to face and response to new type of challenges. Indeed, it enabled us to participate to a concrete Database project which goes from the base architecture to the scripts writing without forgetting the testing phase. 
