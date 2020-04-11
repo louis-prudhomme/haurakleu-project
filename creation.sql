@@ -1,3 +1,4 @@
+-- Tables creation : 
 
 /* Application user
 We check : 
@@ -257,7 +258,7 @@ Note that :
 - its primary key is the field id_report
 - id_report is a foreign key of the field id in the table record. If a report is deleted, all his records are deleted too. */
 
-CREATE TABLE audit_report
+CREATE TABLE adt_report
 (id_report INT NOT NULL
 ,consults INT DEFAULT 0
 ,copies INT DEFAULT 0

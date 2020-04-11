@@ -1,3 +1,5 @@
+-- Functions : 
+
 -- this function plays a centrail role in the user's interaction with reports
 -- it checks for a user, a report and an operation confidentiality level if the operation is allowed
 -- it returns one or crashes

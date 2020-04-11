@@ -1,3 +1,5 @@
+-- Triggers : 
+
 -- this trigger checks that every final report has at least one keyword
 CREATE OR REPLACE TRIGGER trg_report_validation
 AFTER update OR insert
