@@ -13,16 +13,12 @@
   - [Error Management](#error-management)
 - [E/R diagram](#er-diagram)
 - [Implementation of important issues](#implementation-of-important-issues)
-  - [Research](#research)
-  - [Check data consistency](#check-data-consistency)
-  - [Report statistics :](#report-statistics)
-  - [Report :](#report)
-  - [Confidentiality :](#confidentiality)
-  - [Error management :](#error-management-1)
   - [Search](#search)
-  - [Trigger TRG_STUDENT_PROMOTION](#trigger-trgstudentpromotion)
-  - [Function FUN_IS_ALLOWED](#function-funisallowed)
-  - [Procedures PRC_REPORT_*](#procedures-prcreport)
+  - [Check data consistency](#check-data-consistency)
+  - [Report statistics](#report-statistics)
+  - [Report](#report)
+  - [Confidentiality](#confidentiality)
+  - [Error management :](#error-management-1)
   - [Function FUN_MOST_WANTED_REPORTS (ne garder que celle-ci ou FUN_REPORTS_BY_KEYWORD ?)](#function-funmostwantedreports-ne-garder-que-celle-ci-ou-funreportsbykeyword)
   - [Function FUN_REPORTS_BY_KEYWORD (ne garder que celle-ci ou FUN_MOST_WANTED_REPORTS ?)](#function-funreportsbykeyword-ne-garder-que-celle-ci-ou-funmostwantedreports)
   - [Trigger TRG_REPORT_VALIDATION](#trigger-trgreportvalidation)
@@ -111,18 +107,17 @@ In addition, only people with access to MyEfrei can access the report after vali
 
 # Implementation of important issues
 
-## Research 
+## Search 
 
 Easy report search by : 
 
-Keyword
-category (internship or apprentices)
-Student name
-Title
-Company Tutor
-Pedagogic tutor
-Instructions
-….
+- Keyword
+- Category (internship or apprentices) thanks to a select query :  
+```sql
+select id from report where id_student in (select distinct id from student where is_apprentice = 1);
+```
+
+Other searches are possible (such as: by student name, title *etc...*) thanks to simple select 
 
 ## Check data consistency 
 
@@ -155,59 +150,40 @@ Indeed, when a report is declared final, that is to say when it has been vetted 
 The trigger `trg_student_promotion` checks if the promotion of the student matches its study level. To achieve this, it gets the current year and month. If the month is before september, we take the previous year as reference. Then we calculate the difference between calculated gratuating year and state graduating year.
 If the result is inconsistent, it raises a -20006 APPLICATION ERROR.
 
-## Report statistics : 
+## Report statistics 
 
-Most wanted report
-Number of view per report
-Most wanted keyword
-Number of consultation for each report
-Number of copy for each report
-Number of printing for each report
-Number of downloading for each report
+- Most wanted report
+- Number of view per report
+- Most wanted keyword
+- Number of consultation for each report
+- Number of copy for each report
+- Number of printing for each report
+- Number of downloading for each report
 
-## Report : 
+## Report
 
 All students have to submit intermediate documents but only the final report will be saved
 Submit the report before a deadline
 Become readable for the students and teachers only after validation of both tutors
 
-## Confidentiality : 
+## Confidentiality 
 
-Implementation of the report confidentiality
-When a user wants to download, copy or print a report, check that the action requested are allow by the level of confidentiality.
-Only the people who have an access to MyEfrei can have access to the reports after validation
-
-## Error management : 
-
-When searching for a report by keyword, if the keyword does not already exist in the database, send an error message.
-
-
-
-
-## Search 
-
-
-
-
-
-## Trigger TRG_STUDENT_PROMOTION
-
-## Function FUN_IS_ALLOWED
-
-This function plays a central role in the user's interaction with reports. It takes the `ID`s of a user and a report, as well as an operation’s confidentiality level as an input. 
-Then, it pertforms a serie of checks :
-- Checks if both the report and the user exist
-- Checks if the operation is permitted for this report (printing, for instance, is forbidden for level-2 confidentiality reports)
-- Checks if the user is also a My Efrei user or if he was involved in the making of the report (for company tutors, mainly)
-- Checks if the report has been validated or if he was involved in the making of the report (non-validated reports cannot accept incoming operations)
+- Implementation of report confidentiality
+Thanks to the function `fun_is_allowed`, we can manage the confidentiality of the reports. 
+Indeed, this function plays a central role in the user's interaction with reports. It takes the `ID`s of a user and a report, as well as an operation’s confidentiality level as an input. 
+Then, it performs a serie of checks :
+1. Checks if both the report and the user exist
+2. Checks if the operation is permitted for this report (printing, for instance, is forbidden for level-2 confidentiality reports)
+3. Checks if the user is also a My Efrei user or if he was involved in the making of the report (for company tutors, mainly)
+4. Checks if the report has been validated or if he was involved in the making of the report (non-validated reports cannot accept incoming operations)
 
 If any of those checks fails, the function raises an exception. Otherwise, it simply returns `1`.
 
 This function is not directly used by the user, but rather a common denominator for the procedures detailed thereafter.
 
-## Procedures PRC_REPORT_*
+- When a user wants to download, copy or print a report, check that the action requested are allowed by the level of confidentiality.
 
-Those procedures represent the ability of the user to interact with reports. Their are four of them, `CONSULT`, `COPY`, `DOWNLOAD` and `PRINT`. 
+The procedures `PRC_REPORT_*` represent the ability of the user to interact with reports. Their are four of them, `CONSULT`, `COPY`, `DOWNLOAD` and `PRINT`. 
 
 Their name are pretty self-explanatory in what each procedure represents.
 
@@ -219,6 +195,11 @@ Besides, they are very few and slight differences between them ; they basically 
 In fact, `FUN_IS_ALLOWED` does all the heavy lifting for these procedures ; there is only two differences between all of them : 
 1. They all update different fields in the  audit table `ADT_REPORT` (`prints` for `PRC_REPORT_PRINT`, *etc*)
 2. They may have different confidentiality levels ; as per the requirements, we consider `COPY`, `DOWNLOAD` and `PRINT` as level-1 confidentiality operations (which can only be executed on a level-1 confidentiality report) and `CONSULT` to be a level-2 (execution up to level-2 report)
+
+## Error management : 
+
+When searching for a report by keyword, if the keyword does not already exist in the database, send an error message.
+
 
 ## Function FUN_MOST_WANTED_REPORTS (ne garder que celle-ci ou FUN_REPORTS_BY_KEYWORD ?)
 
