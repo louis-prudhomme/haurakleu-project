@@ -1,3 +1,4 @@
+-- Tests : 
 COMMIT;
 
 -- we select the number of views before

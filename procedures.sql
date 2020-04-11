@@ -1,3 +1,5 @@
+-- Procedures : 
+
 -- this procedure simulates the printing of a report
 CREATE OR REPLACE PROCEDURE prc_report_print
 (pn_id_user INT, pn_id_report INT)
@@ -21,7 +23,7 @@ END;
 /
 
 -- this procedure simulates the copying of a report
-CREATE OR REPLACE PROCEDURE prc_report_print
+CREATE OR REPLACE PROCEDURE prc_report_copy
 (pn_id_user INT, pn_id_report INT)
 AS
     -- allows this procedure to be autonomous which allows us to test it in a select
@@ -43,7 +45,7 @@ END;
 /
 
 -- this procedure simulates the downloading of a report
-CREATE OR REPLACE PROCEDURE prc_report_print
+CREATE OR REPLACE PROCEDURE prc_report_download
 (pn_id_user INT, pn_id_report INT)
 AS
     -- allows this procedure to be autonomous which allows us to test it in a select
@@ -65,7 +67,7 @@ END;
 /
 
 -- this procedure simulates the consulting of a report
-CREATE OR REPLACE PROCEDURE prc_report_print
+CREATE OR REPLACE PROCEDURE prc_report_consult
 (pn_id_user INT, pn_id_report INT)
 AS
     -- this allows this procedure to be autonomous which allows us to test it in a select
