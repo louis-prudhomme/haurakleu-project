@@ -18,6 +18,7 @@ DROP PROCEDURE prc_report_print;
 DROP FUNCTION fun_is_allowed;
 DROP FUNCTION fun_reports_by_keyword;
 DROP FUNCTION fun_most_wanted_keywords;
+DROP FUNCTION fun_most_wanted_reports;
 
 -- data tables, relations tables and audit tables
 DROP TABLE adt_keyword;
@@ -486,6 +487,25 @@ BEGIN
     RETURN lc_most_wanted_keywords;
 END fun_most_wanted_keywords;
 /
+-- returns a cursor on the first n most wanted reports, n being the parameter given to the function
+
+CREATE OR REPLACE FUNCTION fun_most_wanted_reports
+(pn_take_first NUMBER)
+RETURN SYS_REFCURSOR
+AS
+ lc_most_wanted_reports SYS_REFCURSOR;
+BEGIN
+    OPEN lc_most_wanted_reports
+        FOR SELECT * FROM (
+            SELECT tab_report.id, tab_report.title, adt_report.consults 
+            FROM tab_report, adt_report 
+            WHERE adt_report.id_report = tab_report.id 
+            ORDER BY adt_report.consults DESC)
+            WHERE ROWNUM <= pn_take_first;
+    RETURN lc_most_wanted_reports;
+END fun_most_wanted_reports;
+/
+
 
 -- Procedures : 
 
@@ -1105,7 +1125,7 @@ BEGIN
 END;
 /
 
--- test get most wanted reports
+-- test get most wanted keywords
 SET SERVEROUTPUT ON SIZE 1000000
 DECLARE
     lc_results SYS_REFCURSOR;
@@ -1217,3 +1237,23 @@ INSERT INTO tab_student (id, promotion, is_apprentice, id_major, id_study_level)
 
 -- Category search (internship or apprentices) 
 select id from tab_report where id_student in (select distinct id from tab_student where is_apprentice = 1);
+
+-- test get most wanted reports
+SET SERVEROUTPUT ON SIZE 1000000
+DECLARE
+    lc_results SYS_REFCURSOR;
+    ln_id_report NUMBER;
+    lv_title_report VARCHAR2(64);
+    ln_researches_report NUMBER;
+BEGIN
+    lc_results := fun_most_wanted_reports(5);
+
+    LOOP
+        FETCH lc_results
+            INTO ln_id_report, lv_title_report, ln_researches_report;
+            EXIT WHEN lc_results%NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE('id tab_report : '|| ln_id_report || ' | ' || 'title : ' || lv_title_report || ' | ' || 'nb search : '|| ln_researches_report);
+    END LOOP;
+    CLOSE lc_results;
+END;
+/

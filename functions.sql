@@ -161,4 +161,23 @@ BEGIN
     RETURN lc_most_wanted_keywords;
 END fun_most_wanted_keywords;
 /
+-- returns a cursor on the first n most wanted reports, n being the parameter given to the function
+
+CREATE OR REPLACE FUNCTION fun_most_wanted_reports
+(pn_take_first NUMBER)
+RETURN SYS_REFCURSOR
+AS
+ lc_most_wanted_reports SYS_REFCURSOR;
+BEGIN
+    OPEN lc_most_wanted_reports
+        FOR SELECT * FROM (
+            SELECT tab_report.id, tab_report.title, adt_report.consults 
+            FROM tab_report, adt_report 
+            WHERE adt_report.id_report = tab_report.id 
+            ORDER BY adt_report.consults DESC)
+            WHERE ROWNUM <= pn_take_first;
+    RETURN lc_most_wanted_reports;
+END fun_most_wanted_reports;
+/
+
 

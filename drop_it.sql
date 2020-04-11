@@ -18,6 +18,7 @@ DROP PROCEDURE prc_report_print;
 DROP FUNCTION fun_is_allowed;
 DROP FUNCTION fun_reports_by_keyword;
 DROP FUNCTION fun_most_wanted_keywords;
+DROP FUNCTION fun_most_wanted_reports;
 
 -- data tables, relations tables and audit tables
 DROP TABLE adt_keyword;
