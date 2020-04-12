@@ -18,4 +18,4 @@ cp "./avengers.sql" "./$DELIVERY_FOLDER/${OUR_NAMES}_full_script.sql"
 cp "./model/haurakleu-model.png" "./$DELIVERY_FOLDER/${OUR_NAMES}_diagram.png"
 zip -r "./$DELIVERY_FOLDER/separated_scripts.zip" "$SEPARATE_FOLDER" > /dev/null
 
-rm -rf "$SEPARATE_FOLDER" 
+rm -rf "$SEPARATE_FOLDER"

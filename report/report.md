@@ -17,6 +17,7 @@ table {
 
 # Table of contents
 - [Table of contents](#table-of-contents)
+- [Delivery description](#delivery-description)
 - [Introduction - short description of project subject](#introduction---short-description-of-project-subject)
 - [Naming conventions](#naming-conventions)
   - [Variables](#variables)
@@ -52,6 +53,24 @@ table {
 - [Conclusion](#conclusion)
 
 <div class="page">
+
+# Delivery description
+
+The delivery folder should be organized as follows :
+```
+delivery/
+├── Marques_Prud’homme_diagram.png
+├── Marques_Prud’homme_full_script.sql
+├── Marques_Prud’homme.pdf
+└── separated_scripts.zip
+```
+
+- The `full_script` contains every line of SQL and PL/SQL made for the project. It is meant to be executed once, and it will do everything from the database creation, to its testing.
+- The `diagram` is the E/R diagram of our database. Architectural and design choices motivations can be found in the comments of our SQL scripts.
+- The `separated_scripts` archive contains the pieces of which is made the `full_script`, namely :
+  - a creation script
+  - an insertion script
+  - a testing script
 
 # Introduction - short description of project subject
 
