@@ -6,19 +6,39 @@
 table {
   margin-left: 2em;
 }
+
+h1, h2, h3 {
+	padding-bottom: 0.3em;
+	border-bottom-width: 5px;
+	line-height: 1.2;
+}
+
+h2 {
+	border-bottom-width: 1px;
+  border-bottom-style: solid;
+}
+
+h3 {
+	border-bottom-width: 1px;
+  border-bottom-style: dotted;
+}
 </style>
 
-# Mélanie Marques <!-- omit in toc -->
-# Louis Prud’homme <!-- omit in toc -->
-## Project: M1-SE <!-- omit in toc -->
-## Advanced Databases for Software Engineering <!-- omit in toc -->
+<p style="padding: 10em"/>
+<center>
+  <h1 style="border-bottom-style: none">M1 Software Engineering</h2>
+  <h1 style="border-bottom-style: none">Advanced Databases for Software Engineering</h2>
+  <h2 style="border-bottom-style: none">Mélanie Marques</h1>
+  <h2 style="border-bottom-style: none">Louis Prud’homme</h1>
+  <h2 style="border-bottom-style: none">EFREI Paris – 2020</h2>
+</center>
 
 <div class="page">
 
 # Table of contents
 - [Table of contents](#table-of-contents)
 - [Delivery description](#delivery-description)
-- [Introduction - short description of project subject](#introduction---short-description-of-project-subject)
+- [Introduction](#introduction)
 - [Naming conventions](#naming-conventions)
   - [Variables](#variables)
   - [Objects](#objects)
@@ -39,9 +59,9 @@ table {
     - [All students have to submit intermediate documents but only the final report will be saved](#all-students-have-to-submit-intermediate-documents-but-only-the-final-report-will-be-saved)
     - [Submit the report before a deadline](#submit-the-report-before-a-deadline)
   - [Report statistics](#report-statistics)
-    - [Most wanted Keywords](#most-wanted-keywords)
+    - [Most wanted keywords](#most-wanted-keywords)
     - [Most wanted reports](#most-wanted-reports)
-    - [Number of consultation / copy / printing / downloading for each report](#number-of-consultation--copy--printing--downloading-for-each-report)
+    - [Number of consults, copies, prints, downloads for each report](#number-of-consults-copies-prints-downloads-for-each-report)
   - [Confidentiality](#confidentiality)
     - [Implementation of report confidentiality](#implementation-of-report-confidentiality)
     - [Download, copy or print a reportd](#download-copy-or-print-a-reportd)
@@ -57,7 +77,7 @@ table {
 # Delivery description
 
 The delivery folder should be organized as follows :
-```
+```csharp
 delivery/
 ├── Marques_Prud’homme_diagram.png
 ├── Marques_Prud’homme_full_script.sql
@@ -67,12 +87,16 @@ delivery/
 
 - The `full_script` contains every line of SQL and PL/SQL made for the project. It is meant to be executed once, and it will do everything from the database creation, to its testing.
 - The `diagram` is the E/R diagram of our database. Architectural and design choices motivations can be found in the comments of our SQL scripts.
-- The `separated_scripts` archive contains the pieces of which is made the `full_script`, namely :
-  - a creation script
-  - an insertion script
-  - a testing script
+- The `separated_scripts` archive contains the pieces of which is made the `full_script`, of which here is the required execution order :
+  1. dropping script
+  2. creation script
+  3. function creation script
+  3. procedure creation script
+  3. procedure creation script
+  3. insertion script
+  3. testing script
 
-# Introduction - short description of project subject
+# Introduction
 
 The goal of this project is to develop an electronic document management system to archive all the internship and apprenticeship reports for EFREI.
 
@@ -81,6 +105,8 @@ Today, students must email their reports to tutors (businesses and academics). A
 In the solution that we propose, the system allows an easy search of documents, and makes them accessible.
 
 This research can be done by keyword, by category, title, etc. It allows the report to be submitted before a specified deadline. This report only becomes readable for students and teachers after validation by the tutors. In addition, only people with access to MyEfrei can access the report after validation.
+
+<div class="page">
 
 # Naming conventions
 
@@ -123,13 +149,11 @@ This research can be done by keyword, by category, title, etc. It allows the rep
 |   -20012    |           The report has not been validated, action aborted.           |
 |   -20013    |                    User must be a user of My Efrei.                    |
 
-<div class="page">
-
 # E/R diagram
 
-![E/R diagram](./../model/harakleu-model.png)
+![E/R diagram](./../model/haurakleu-model.png)
 
-You can find the full-sized diagram in the files of the project.
+*You can find the full-sized diagram in the files of the project.*
 
 <div class="page">
 
@@ -169,8 +193,6 @@ The trigger `TRG_STUDENT_PROMOTION` checks if the promotion of the student match
 If the result is inconsistent, it raises an exception `-20006`.
 
 We also take in account that some students dropped, were kicked or graduated out of school ; for such cases, we have created an «OUT» study level.
-
-<div class="page">
 
 ## Search 
 
@@ -213,11 +235,9 @@ When a report is declared as final, i.e when it has been vetted by the company t
 
 After inserting or updating of the field submitted on `TAB_REPORT`, the trigger `TRG_REPORT_DEADLINE` checks if the report submission date is greater than the deadline. If so, an exception `-20002` is raised. 
 
-<div class="page">
-
 ## Report statistics 
 
-### Most wanted Keywords 
+### Most wanted keywords 
 
 The function `FUN_MOST_WANTED_KEYWORDS` returns a cursor pointing on the first *n* most wanted keywords, *n* being the parameter given to the function. 
 
@@ -225,7 +245,7 @@ The function `FUN_MOST_WANTED_KEYWORDS` returns a cursor pointing on the first *
 
 The function `FUN_MOST_WANTED_REPORTS` returns a cursor pointing on the first *n* most wanted reports, *n* being the parameter given to the function.
 
-### Number of consultation / copy / printing / downloading for each report
+### Number of consults, copies, prints, downloads for each report
 
 The table `ADT_REPORT`, thanks to simple `SELECT` queries, allows to get the number of consultation, copies, prints and download for each report. 
 
@@ -290,8 +310,6 @@ For instance, it wasn’t uncommon to see PL/SQL blocks that would compile but c
 Since our SQL script is executed in one time, there are no checkpoints, no commits, until the end of the execution.
 
 This provoked a handful of bugs, notably with PL/SQL blocks, that would compile and run without bugs, but also without doing anything. This was a very strange and weird bug, which we resolved by adding some commit instructions along the script.
-
-<div class="page">
 
 # Conclusion
 
