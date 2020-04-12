@@ -142,8 +142,8 @@ This research can be done by keyword, by category, title, etc. It allows the rep
 |   -20002    |               The report is late, the deadline is over.                |
 |   -20003    |                The hired date can not be in the future.                |
 |   -20004    |                           Keyword not found                            |
-|   -20006    |    Inconsistency between the promotion of the student and his group    |
 |   -20005    |             Expected at least one keyword for this report.             |
+|   -20006    |    Inconsistency between the promotion of the student and his group    |
 |   -20010    | No records were found for either the report id or student id, or both. |
 |   -20011    |             Confidentiality settings disable this action.              |
 |   -20012    |           The report has not been validated, action aborted.           |
