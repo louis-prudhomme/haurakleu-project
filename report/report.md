@@ -1,10 +1,19 @@
+<style type="text/css">
+:not(pre):not(.hljs) > code {
+	color: #2b91af;
+}
+
+table {
+  margin-left: 2em;
+}
+</style>
+
 # Mélanie Marques <!-- omit in toc -->
 # Louis Prud’homme <!-- omit in toc -->
 ## Project: M1-SE <!-- omit in toc -->
 ## Advanced Databases for Software Engineering <!-- omit in toc -->
 
-
-<div style="page-break-after: always;"/>
+<div class="page">
 
 # Table of contents
 - [Table of contents](#table-of-contents)
@@ -16,10 +25,25 @@
 - [E/R diagram](#er-diagram)
 - [Implementation of important issues](#implementation-of-important-issues)
   - [Data consistency](#data-consistency)
+    - [User emails](#user-emails)
+    - [Phone numbers](#phone-numbers)
+    - [Passwords strength](#passwords-strength)
+    - [Teacher hired date not in the future](#teacher-hired-date-not-in-the-future)
+    - [Each report must have minimum one keyword](#each-report-must-have-minimum-one-keyword)
+    - [Consistency between a student’s group and their promotion](#consistency-between-a-students-group-and-their-promotion)
   - [Search](#search)
+    - [Keyword](#keyword)
+    - [Category (internship or apprentices) thanks to a select query :](#category-internship-or-apprentices-thanks-to-a-select-query)
   - [Report](#report)
+    - [All students have to submit intermediate documents but only the final report will be saved](#all-students-have-to-submit-intermediate-documents-but-only-the-final-report-will-be-saved)
+    - [Submit the report before a deadline](#submit-the-report-before-a-deadline)
   - [Report statistics](#report-statistics)
+    - [Most wanted Keywords](#most-wanted-keywords)
+    - [Most wanted reports](#most-wanted-reports)
+    - [Number of consultation / copy / printing / downloading for each report](#number-of-consultation--copy--printing--downloading-for-each-report)
   - [Confidentiality](#confidentiality)
+    - [Implementation of report confidentiality](#implementation-of-report-confidentiality)
+    - [Download, copy or print a reportd](#download-copy-or-print-a-reportd)
 - [Problems encountered](#problems-encountered)
   - [Subject understanding](#subject-understanding)
   - [Virtual machine : not an ideal environment](#virtual-machine--not-an-ideal-environment)
@@ -27,7 +51,7 @@
   - [Need to commit](#need-to-commit)
 - [Conclusion](#conclusion)
 
-<div style="page-break-after: always;"/>
+<div class="page">
 
 # Introduction - short description of project subject
 
@@ -36,6 +60,7 @@ The goal of this project is to develop an electronic document management system 
 Today, students must email their reports to tutors (businesses and academics). Apprentice students submit their reports on Moodle. Students can submit intermediate documents but only the final report is saved.
 
 In the solution that we propose, the system allows an easy search of documents, and makes them accessible.
+
 This research can be done by keyword, by category, title, etc. It allows the report to be submitted before a specified deadline. This report only becomes readable for students and teachers after validation by the tutors. In addition, only people with access to MyEfrei can access the report after validation.
 
 # Naming conventions
@@ -63,7 +88,7 @@ This research can be done by keyword, by category, title, etc. It allows the rep
 | Starts with `prc` |   Procedure    |  `prc_report_consult`   |
 | Starts with `trg` |    Trigger     | `trg_report_validation` |
 
-<div style="page-break-after: always;"/>
+<div class="page">
 
 ## Error Management
 
@@ -74,18 +99,20 @@ This research can be done by keyword, by category, title, etc. It allows the rep
 |   -20004    |                           Keyword not found                            |
 |   -20006    |    Inconsistency between the promotion of the student and his group    |
 |   -20005    |             Expected at least one keyword for this report.             |
+|   -20010    | No records were found for either the report id or student id, or both. |
 |   -20011    |             Confidentiality settings disable this action.              |
 |   -20012    |           The report has not been validated, action aborted.           |
-|   -20010    | No records were found for either the report id or student id, or both. |
 |   -20013    |                    User must be a user of My Efrei.                    |
 
-<div style="page-break-after: always;"/>
+<div class="page">
 
 # E/R diagram
 
 ![E/R diagram](./../model/harakleu-model.png)
 
-<div style="page-break-after: always;"/>
+You can find the full-sized diagram in the files of the project.
+
+<div class="page">
 
 # Implementation of important issues
 
@@ -93,103 +120,116 @@ This research can be done by keyword, by category, title, etc. It allows the rep
 
 To ensure the consistency of the data, we have undertaken to set up controls at the time of data insertion.
 
-- User emails
+### User emails
 
-Using a CHECK when creating the User table, we verify that the user's email is of the form `example@example.fr`.
+Using a `CHECK` when creating the User table, we verify that the user's email is of the form `example@example.fr`.
 
-- Phone numbers
+### Phone numbers
 
-Using a CHECK CONSTRAINT on the table User, we verify that the user phone number respect the pattern of a classic phone number : `+33699999999` or `0699999999`.
+Using a `CHECK CONSTRAINT` on the table User, we verify that the user phone number respect the pattern of a classic phone number : `+33699999999` or `0699999999`.
 
-- Passwords strength
+### Passwords strength
 
-Using a CHECK CONSTRAINT on the table User, we check that the password is strong,  i.e. if it has at least one capital letter, a lowercase letter, a special character, a number and its length is greater than or equal to 8. 
+Using a `CHECK CONSTRAINT` on the table User, we check that the password is strong, i.e. if it has at least one capital letter, a lowercase letter, a special character, a number and its length is greater than or equal to 8. 
 
-- Teacher hired date not in the future
+### Teacher hired date not in the future
 
-As the SYSDATE cannot be used in a CHECK CONSTRAINT, we created a trigger : `trg_teacher_hired_date` to ensure that the teacher hired date is lower than the SYSDATE.
-If this condition isn't respected, it raises a -20003 APPLICATION ERROR.  
+As the `SYSDATE` cannot be used in a `CHECK CONSTRAINT`, we created a trigger : `TRG_TEACHER_HIRED_DATE` to ensure that the teacher hired date is lower than the `SYSDATE`.
+If this condition isn't respected, it raises an exception `-20003`.  
 
-- Each report must have minimum one keyword
+### Each report must have minimum one keyword
 
-We added a trigger `trg_report_validation` in order to check that every final report has at least one keyword. 
-Indeed, when a report is declared final, that is to say when it has been vetted by the company tutor and the pedagogic tutor, the trigger count the number of keyword for the report. If this number is lower than 1 it raises a -20005 APPLICATION ERROR. 
+We added a trigger `TRG_REPORT_VALIDATION` in order to check that every final report has at least one keyword.
 
-- Consistency between a student’s group and their promotion
+Indeed, when a report is declared final, that is to say when it has been vetted by the company tutor and the pedagogic tutor, the trigger counts the number of keywords for the report. If this number is lower than 1 it raises an exception `-20005`. 
 
-The trigger `trg_student_promotion` checks if the promotion of the student matches its study level. To achieve this, it gets the current year and month. If the month is before september, we take the previous year as reference. Then we calculate the difference between calculated gratuating year and state graduating year.
-If the result is inconsistent, it raises a -20006 APPLICATION ERROR.
+### Consistency between a student’s group and their promotion
 
-<div style="page-break-after: always;"/>
+The trigger `TRG_STUDENT_PROMOTION` checks if the promotion of the student matches its study level. To achieve this, it gets the current year and month. If the month is before september, we take the previous year as reference. Then we calculate the difference between calculated gratuating year and state graduating year.
+
+If the result is inconsistent, it raises an exception `-20006`.
+
+We also take in account that some students dropped, were kicked or graduated out of school ; for such cases, we have created an «OUT» study level.
+
+<div class="page">
 
 ## Search 
 
 The solution we suggest allows easy report search by :  
 
-- Keyword
+### Keyword
 
-The function `fun_reports_by_keyword` allows to obtain a cursor on all the reports tagged with the provided keyword. 
+The function `FUN_REPORTS_BY_KEYWORD` allows to obtain a cursor on all the reports tagged with the provided keyword.
 
-In addition, this function is marked as `PRAGMA`, it allows it to be autonomous and thus we can test it in a select.
 This function works as follows : 
 1. It gets the id of the provided keyword
 2. It opens the cursor and point it on all reports related to the specified keyword
 3. It reports where found, it update the keyword audit table. 
 4. It returns the cursor
 
-Furthermore, if there isn't any keyword with this label, the function raises a -20004 APPLICATION ERROR. 
+In addition, this function is marked as `PRAGMA`, it allows it to be autonomous and thus we can test it in a `SELECT` (since we execute a DML operation on the audit table, and this cannot be done in a query).
 
-- Category (internship or apprentices) thanks to a select query : 
+Furthermore, if there isn't any keyword with this label, the function raises an exception `-20004`. 
+
+### Category (internship or apprentices) thanks to a select query : 
  
 ```sql
-select id from report where id_student in (select distinct id from student where is_apprentice = 1);
+SELECT id 
+  FROM report 
+  WHERE id_student IN (
+    SELECT DISTINCT id 
+      FROM student 
+      WHERE is_apprentice = 1);
 ```
 
-Other searches are possible (such as: by student name, title *etc...*) thanks to simple SELECT queries. 
+Other searches are possible (such as: by student name, title *etc...*) thanks to simple `SELECT` queries. 
 
 ## Report
 
-- All students have to submit intermediate documents but only the final report will be saved
+### All students have to submit intermediate documents but only the final report will be saved
 
-When a report is declared as final, i.e when it has been vetted by the company tutor and the pedagogic tutor, the trigger `trg_report_validation` will call the procedure `prc_delete_intermediary_reports` in order to delete intermediary reports. 
+When a report is declared as final, i.e when it has been vetted by the company tutor and the pedagogic tutor, the trigger `TRG_REPORT_VALIDATION` will call the procedure `PRC_DELETE_INTERMEDIARY_REPORTS` in order to delete intermediary reports. 
 
-- Submit the report before a deadline
+### Submit the report before a deadline
 
-After inserting or updating of the field submitted on `tab_report`, the trigger `trg_report_deadline` checks if the report submission date is greater than the deadline. If so, a -20002 APPLICATION ERROR is raised. 
+After inserting or updating of the field submitted on `TAB_REPORT`, the trigger `TRG_REPORT_DEADLINE` checks if the report submission date is greater than the deadline. If so, an exception `-20002` is raised. 
 
-<div style="page-break-after: always;"/>
+<div class="page">
 
 ## Report statistics 
 
-- Most wanted Keywords 
+### Most wanted Keywords 
 
-The function `fun_most_wanted_keywords`returns a cursor pointing on the first n most wanted keywords, n being the parameter given to the function. 
+The function `FUN_MOST_WANTED_KEYWORDS` returns a cursor pointing on the first *n* most wanted keywords, *n* being the parameter given to the function. 
 
-- Most wanted reports
+### Most wanted reports
 
-The function `fun_most_wanted_reports`returns a cursor pointing on the first n most wanted reports, n being the parameter given to the function.
+The function `FUN_MOST_WANTED_REPORTS` returns a cursor pointing on the first *n* most wanted reports, *n* being the parameter given to the function.
 
-- Number of consultation / copy / printing / downloading for each report
+### Number of consultation / copy / printing / downloading for each report
 
-The table `adt_report` thanks to simple SELECT queries allows to get the number of consultation, copies, prints and download for each report. 
-
+The table `ADT_REPORT`, thanks to simple `SELECT` queries, allows to get the number of consultation, copies, prints and download for each report. 
 
 ## Confidentiality 
 
-- Implementation of report confidentiality
-Thanks to the function `fun_is_allowed`, we can manage the confidentiality of the reports. 
-Indeed, this function plays a central role in the user's interaction with reports. It takes the `ID`s of a user and a report, as well as an operation’s confidentiality level as an input. 
+### Implementation of report confidentiality
+
+Thanks to the function `FUN_IS_ALLOWED`, we can manage the confidentiality of the reports. 
+Indeed, this function plays a central role in the user's interaction with reports. It takes the `ID`s of a user and a report, as well as an operation’s confidentiality level as an input.
+
 Then, it performs a serie of checks :
 1. Checks if both the report and the user exist
 2. Checks if the operation is permitted for this report (printing, for instance, is forbidden for level-2 confidentiality reports)
 3. Checks if the user is also a My Efrei user or if he was involved in the making of the report (for company tutors, mainly)
 4. Checks if the report has been validated or if he was involved in the making of the report (non-validated reports cannot accept incoming operations)
 
-If any of those checks fails, the function raises an exception. Otherwise, it simply returns `1`.
+If any of those checks fails, the function raises an exception between `-20010` and `-20013`. Otherwise, it simply returns `1`.
 
 This function is not directly used by the user, but rather a common denominator for the procedures detailed thereafter.
 
-- When a user wants to download, copy or print a report, check that the action requested are allowed by the level of confidentiality.
+### Download, copy or print a reportd
+
+When a user wants to download, copy or print a report, check that the action requested are allowed by the level of confidentiality.
 
 The procedures `PRC_REPORT_*` represent the ability of the user to interact with reports. Their are four of them, `CONSULT`, `COPY`, `DOWNLOAD` and `PRINT`. 
 
@@ -204,22 +244,36 @@ In fact, `FUN_IS_ALLOWED` does all the heavy lifting for these procedures ; ther
 1. They all update different fields in the  audit table `ADT_REPORT` (`prints` for `PRC_REPORT_PRINT`, *etc*)
 2. They may have different confidentiality levels ; as per the requirements, we consider `COPY`, `DOWNLOAD` and `PRINT` as level-1 confidentiality operations (which can only be executed on a level-1 confidentiality report) and `CONSULT` to be a level-2 (execution up to level-2 report)
 
+<div class="page">
+
 # Problems encountered
 
 ## Subject understanding
 
-The given subject being vague gave us a hard time to understand it. 
+We had some hard times understanding the instructions, its needs and requirements. 
 
 ## Virtual machine : not an ideal environment
 
 Working on a virtual machine considerably increases our working time. Indeed, we had to face many crashes, black screens, and bugs, sometimes resulting in data loss.
 
+Moreover, even when it works the best it can, it is slow. So slow, in fact, that is it a better idea to code on an external IDE and then only test in the virtual machine. But even that is slow, given the tremendous input lag caused by the virtual nature of the machine.
+
+At some point, we were so fed up with those lags we developed a bash scripts to automaticaly send and retrieve our SQL scripts.
+
 ## Oracle errors management
 
-Oracle error handling being quite imprecise, it is quite dificult to debug when our script had an error. 
+Oracle error handling being quite imprecise, it was quite dificult to debug when our script had an error.
+
+For instance, it wasn’t uncommon to see PL/SQL blocks that would compile but crash at execution.
 
 ## Need to commit
 
+Since our SQL script is executed in one time, there are no checkpoints, no commits, until the end of the execution.
+
+This provoked a handful of bugs, notably with PL/SQL blocks, that would compile and run without bugs, but also without doing anything. This was a very strange and weird bug, which we resolved by adding some commit instructions along the script.
+
+<div class="page">
+
 # Conclusion
 
-This project allow us to face and response to new type of challenges. Indeed, it enabled us to participate to a concrete Database project which goes from the base architecture to the scripts writing without forgetting the testing phase. 
+This project allow us to face and response to new type of challenges. Indeed, it enabled us to participate to a concrete database project which goes from the base architecture to the scripts writing without forgetting the testing phase. 
