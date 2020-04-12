@@ -15,6 +15,7 @@ cat "./drop_it.sql" "./creation.sql" "./functions.sql" "./procedures.sql" "./tri
 
 cp "./report/report.pdf" "./$DELIVERY_FOLDER/$OUR_NAMES.pdf"
 cp "./avengers.sql" "./$DELIVERY_FOLDER/${OUR_NAMES}_full_script.sql"
-zip -r "./$DELIVERY_FOLDER/separated_scripts.zip" "$SEPARATE_FOLDER"
+cp "./model/haurakleu-model.png" "./$DELIVERY_FOLDER/${OUR_NAMES}_diagram.png"
+zip -r "./$DELIVERY_FOLDER/separated_scripts.zip" "$SEPARATE_FOLDER" > /dev/null
 
-rm -rf "$SEPARATE_FOLDER"
+rm -rf "$SEPARATE_FOLDER" 
